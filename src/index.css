@@ -52,4 +52,22 @@
   body {
     @apply bg-bg-primary text-text-primary font-inter antialiased m-0 min-h-screen transition-colors duration-300;
   }
+
+  /* Global Select Input Styling */
+  select {
+    @apply appearance-none bg-no-repeat pr-10 cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-size: 1.5em 1.5em;
+  }
+
+  /* Update arrow color for light mode */
+  :root[data-theme="light"] select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+
+  /* Fix for option elements styling inside dropdown */
+  select option {
+    @apply bg-bg-secondary text-text-primary;
+  }
 }
