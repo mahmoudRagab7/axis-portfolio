@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import ThemeToggle from '../common/ThemeToggle';
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -52,10 +53,14 @@ const AdminLayout = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border flex flex-col gap-2">
+          <div className="flex items-center justify-between px-4 py-2">
+            <span className="text-sm font-medium text-text-secondary">Theme</span>
+            <ThemeToggle />
+          </div>
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full text-left text-text-muted hover:text-accent-red hover:bg-accent-red/10 rounded-xl transition-all duration-300"
+            className="flex items-center gap-3 px-4 py-3 w-full text-left text-text-muted hover:text-accent-red hover:bg-accent-red/10 rounded-xl transition-all duration-300 cursor-pointer"
           >
             <span>🚪</span>
             <span className="font-medium">Sign Out</span>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
+import ThemeToggle from '../common/ThemeToggle';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,7 +51,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -62,24 +63,33 @@ const Navbar = () => {
               </a>
             ))}
             
-            {/* CTA Button */}
-            <a 
-              href="#contact"
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-accent-gold to-yellow-400 text-bg-primary font-semibold text-sm hover:shadow-[0_0_15px_rgba(240,185,11,0.4)] transition-all duration-300 transform hover:-translate-y-0.5"
-            >
-              Get Signals
-            </a>
+            <div className="flex items-center gap-4 pl-4 border-l border-border/50">
+              <ThemeToggle />
+              
+              {/* CTA Button */}
+              <a 
+                href="#contact"
+                className="px-6 py-2 rounded-full bg-gradient-to-r from-accent-gold to-yellow-400 text-bg-primary font-semibold text-sm hover:shadow-[0_0_15px_rgba(240,185,11,0.4)] transition-all duration-300 transform hover:-translate-y-0.5"
+              >
+                Get Signals
+              </a>
+            </div>
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 z-50 focus:outline-none"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <span className={`h-0.5 w-6 bg-text-primary rounded-full transition-transform duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`h-0.5 w-6 bg-text-primary rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
-            <span className={`h-0.5 w-6 bg-text-primary rounded-full transition-transform duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-          </button>
+          {/* Mobile Actions */}
+          <div className="flex md:hidden items-center gap-4">
+            <ThemeToggle />
+            
+            {/* Mobile Menu Button */}
+            <button
+              className="flex flex-col justify-center items-center w-8 h-8 gap-1.5 z-50 focus:outline-none"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <span className={`h-0.5 w-6 bg-text-primary rounded-full transition-transform duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`h-0.5 w-6 bg-text-primary rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`h-0.5 w-6 bg-text-primary rounded-full transition-transform duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </button>
+          </div>
         </div>
       </div>
 
