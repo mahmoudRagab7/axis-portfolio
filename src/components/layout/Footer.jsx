@@ -45,7 +45,7 @@ const Footer = () => {
           <div>
             <h4 className="text-text-primary font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              {['Home', 'About Us', 'Services', 'Trading Results', 'Pricing'].map((link) => (
+              {['Home', 'About Us', 'Services', 'Results'].map((link) => (
                 <li key={link}>
                   <a href={`#${link.toLowerCase().replace(' ', '-')}`} className="text-text-secondary hover:text-accent-gold text-sm transition-colors flex items-center gap-2 group">
                     <span className="w-1 h-1 rounded-full bg-accent-gold/50 group-hover:bg-accent-gold transition-colors"></span>
@@ -107,7 +107,9 @@ const Footer = () => {
             <a href="#disclaimer" className="hover:text-text-primary transition-colors">Risk Disclaimer</a>
           </div>
         </div>
+        <div className='flex justify-center m-4 text-text-secondary text-sm hidden'>Made By Zikovic</div>
       </div>
+      
     </footer>
   );
 };
