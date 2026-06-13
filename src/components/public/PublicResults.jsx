@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useMarkets } from '../../hooks/useMarkets';
 import { useResults } from '../../hooks/useResults';
 
 const PublicResults = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.language && i18n.language.startsWith('ar') ? 'ar' : 'en';
   const [activeMarket, setActiveMarket] = useState('all');
   const { markets, loading: marketsLoading } = useMarkets();
   const { results, loading: resultsLoading } = useResults(activeMarket);
@@ -18,10 +21,13 @@ const PublicResults = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-bold font-heading text-text-primary mb-4">
-            Recent <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold to-yellow-500">Trading Results</span>
+            {t('results_section.title_prefix')}{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold to-yellow-500">
+              {t('results_section.title_highlight')}
+            </span>
           </h2>
           <p className="text-text-secondary text-lg">
-            Explore our latest technical predictions and their real-world outcomes across global markets.
+            {t('results_section.subtitle')}
           </p>
         </div>
 
@@ -35,7 +41,7 @@ const PublicResults = () => {
                 : 'bg-bg-secondary text-text-secondary border-border hover:border-accent-gold/50 hover:text-text-primary'
             }`}
           >
-            All Markets
+            {t('results_section.all_markets')}
           </button>
           
           {!marketsLoading && publicMarkets.map((market) => (
@@ -49,7 +55,7 @@ const PublicResults = () => {
               }`}
             >
               <span>{market.icon}</span>
-              <span>{market.name}</span>
+              <span>{language === 'ar' ? (market.nameAr || market.name) : market.name}</span>
             </button>
           ))}
         </div>
@@ -65,15 +71,15 @@ const PublicResults = () => {
           ) : results.length === 0 ? (
             <div className="text-center py-24 bg-bg-secondary/30 rounded-3xl border border-border/50">
               <span className="text-5xl block mb-4">📉</span>
-              <h3 className="text-xl font-bold text-text-primary mb-2">No results found</h3>
-              <p className="text-text-secondary">Check back later for new trading predictions.</p>
+              <h3 className="text-xl font-bold text-text-primary mb-2">{t('results_section.no_results_title')}</h3>
+              <p className="text-text-secondary">{t('results_section.no_results_desc')}</p>
             </div>
           ) : (
             <div className="flex flex-col gap-16">
               <AnimatePresence mode="popLayout">
                 {results.map((result) => {
                   const marketData = markets.find(m => m.slug === result.market);
-                  const date = result.createdAt ? new Date(result.createdAt.seconds * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+                  const date = result.createdAt ? new Date(result.createdAt.seconds * 1000).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
                   return (
                     <motion.div
@@ -89,10 +95,10 @@ const PublicResults = () => {
                       <div className="w-full bg-bg-primary border-b border-border">
                         <img 
                           src={result.imageUrl} 
-                          alt="Trading Prediction Before and After" 
+                          alt={t('results_section.before_after_alt')} 
                           className="w-full h-auto object-contain max-h-[600px] cursor-pointer"
                           onClick={() => window.open(result.imageUrl, '_blank')}
-                          title="Click to view full size"
+                          title={t('results_section.click_full_size')}
                         />
                       </div>
                       
@@ -102,14 +108,14 @@ const PublicResults = () => {
                           {marketData && (
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-primary border border-border text-sm font-medium text-text-secondary">
                               <span>{marketData.icon}</span>
-                              <span>{marketData.name}</span>
+                              <span>{language === 'ar' ? (marketData.nameAr || marketData.name) : marketData.name}</span>
                             </div>
                           )}
                           <span className="text-sm font-mono text-text-muted">{date}</span>
                         </div>
                         
                         <p className="text-text-primary text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
-                          {result.description}
+                          {language === 'ar' ? (result.descriptionAr || result.description) : result.description}
                         </p>
                       </div>
                     </motion.div>

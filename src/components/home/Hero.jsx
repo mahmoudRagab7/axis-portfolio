@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from '../common/Button';
 import { useStatistics } from '../../hooks/useStatistics';
 
 const Hero = () => {
+  const { t } = useTranslation();
   const { statistics, loading } = useStatistics();
 
   const statItems = [
-    { label: 'Success Rate', value: loading ? '...' : `${statistics?.successRate || 0}%` },
-    { label: 'Active Markets', value: loading ? '...' : `${statistics?.marketsCount || 0}+` },
-    { label: 'Total Trades', value: loading ? '...' : `${statistics?.totalTrades || 0}+` },
-    { label: 'Happy Clients', value: loading ? '...' : `${statistics?.happyClients || 0}+` }
+    { label: t('hero.stats.success_rate'), value: loading ? '...' : `${statistics?.successRate || 0}%` },
+    { label: t('hero.stats.active_markets'), value: loading ? '...' : `${statistics?.marketsCount || 0}+` },
+    { label: t('hero.stats.total_trades'), value: loading ? '...' : `${statistics?.totalTrades || 0}+` },
+    { label: t('hero.stats.happy_clients'), value: loading ? '...' : `${statistics?.happyClients || 0}+` }
   ];
 
   return (
@@ -34,7 +36,7 @@ const Hero = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-bg-secondary/80 border border-accent-gold/30 backdrop-blur-sm mb-8 shadow-[0_0_20px_rgba(240,185,11,0.1)]"
         >
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
-          <span className="text-xs md:text-sm font-medium text-text-secondary tracking-wide uppercase">Premium Trading Analysis</span>
+          <span className="text-xs md:text-sm font-medium text-text-secondary tracking-wide uppercase">{t('hero.tagline')}</span>
         </motion.div>
 
         <motion.h1 
@@ -43,8 +45,8 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold font-heading text-text-primary mb-6 tracking-tight max-w-5xl leading-tight"
         >
-          Navigate the markets with <br className="hidden md:block"/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold via-yellow-400 to-accent-gold">absolute precision</span>
+          {t('hero.title_main')} <br className="hidden md:block"/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold via-yellow-400 to-accent-gold">{t('hero.title_highlight')}</span>
         </motion.h1>
 
         <motion.p 
@@ -53,7 +55,7 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           className="text-lg md:text-xl text-text-secondary max-w-2xl mb-12 leading-relaxed"
         >
-          Empowering your financial journey with highly accurate signals, expert advisory, and real-time insights across global markets.
+          {t('hero.subtitle')}
         </motion.p>
 
         <motion.div 
@@ -63,10 +65,10 @@ const Hero = () => {
           className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
           <Button href="#results" variant="primary" className="w-full sm:w-auto px-10 py-4">
-            View Trading Results
+            {t('hero.cta_results')}
           </Button>
           <Button href="#services" variant="secondary" className="w-full sm:w-auto px-10 py-4">
-            Our Services
+            {t('hero.cta_services')}
           </Button>
         </motion.div>
 

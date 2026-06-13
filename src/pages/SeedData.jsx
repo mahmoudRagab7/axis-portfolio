@@ -12,11 +12,11 @@ const SeedData = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const defaultMarkets = [
-    { name: "US Stock Market", slug: "us", icon: "🇺🇸", order: 1, isActive: true },
-    { name: "Egyptian Exchange", slug: "egypt", icon: "🇪🇬", order: 2, isActive: true },
-    { name: "Saudi Market (Tadawul)", slug: "saudi", icon: "🇸🇦", order: 3, isActive: true },
-    { name: "Cryptocurrencies", slug: "crypto", icon: "₿", order: 4, isActive: true },
-    { name: "Forex Trading", slug: "forex", icon: "💱", order: 5, isActive: true },
+    { name: "US Stock Market", nameAr: "سوق الأسهم الأمريكية", slug: "us", icon: "🇺🇸", order: 1, isActive: true },
+    { name: "Egyptian Exchange", nameAr: "البورصة المصرية", slug: "egypt", icon: "🇪🇬", order: 2, isActive: true },
+    { name: "Saudi Market (Tadawul)", nameAr: "السوق السعودي (تداول)", slug: "saudi", icon: "🇸🇦", order: 3, isActive: true },
+    { name: "Cryptocurrencies", nameAr: "العملات الرقمية", slug: "crypto", icon: "₿", order: 4, isActive: true },
+    { name: "Forex Trading", nameAr: "تداول العملات الأجنبية (الفوركس)", slug: "forex", icon: "💱", order: 5, isActive: true },
   ];
 
   const defaultStats = {

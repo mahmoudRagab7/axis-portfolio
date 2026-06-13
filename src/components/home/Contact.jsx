@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from '../common/Button';
 
 const Contact = () => {
+  const { t } = useTranslation();
+
   return (
     <section id="contact" className="py-24 bg-bg-secondary relative border-t border-border/30 overflow-hidden">
       {/* Background Glow */}
@@ -16,10 +19,12 @@ const Contact = () => {
             
             <div>
               <h2 className="text-3xl font-bold font-heading text-text-primary mb-4">
-                Ready to <span className="text-accent-gold">Dominate</span> the Markets?
+                {t('contact.section_title_prefix')}{' '}
+                <span className="text-accent-gold">{t('contact.section_title_highlight')}</span>
+                {' '}{t('contact.section_title_suffix')}
               </h2>
               <p className="text-text-secondary mb-8">
-                Get exclusive access to premium trading signals, real-time analysis, and 1-on-1 mentorship.
+                {t('contact.subtitle')}
               </p>
 
               <div className="space-y-6">
@@ -28,7 +33,7 @@ const Contact = () => {
                     ✉️
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">Email Us</h4>
+                    <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">{t('contact.email_us')}</h4>
                     <a href="mailto:support@axisportfolio.com" className="text-text-secondary hover:text-accent-gold transition-colors">support@axisportfolio.com</a>
                   </div>
                 </div>
@@ -38,7 +43,7 @@ const Contact = () => {
                     ✈️
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">Telegram Channel</h4>
+                    <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">{t('contact.telegram')}</h4>
                     <a href="#" className="text-text-secondary hover:text-accent-gold transition-colors">@AxisSignalsVIP</a>
                   </div>
                 </div>
@@ -48,26 +53,26 @@ const Contact = () => {
 
           {/* Right Side: Form */}
           <div className="w-full md:w-7/12 p-10 md:p-12">
-            <h3 className="text-2xl font-bold text-text-primary mb-6">Request Access</h3>
-            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); alert("Thanks for your interest! We will contact you soon."); }}>
+            <h3 className="text-2xl font-bold text-text-primary mb-6">{t('contact.request_access')}</h3>
+            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); alert(t('contact.success_alert')); }}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">First Name</label>
+                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">{t('contact.first_name')}</label>
                   <input type="text" required className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:border-accent-gold transition-colors" placeholder="John" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Last Name</label>
+                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">{t('contact.last_name')}</label>
                   <input type="text" required className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:border-accent-gold transition-colors" placeholder="Doe" />
                 </div>
               </div>
               
               <div>
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Email Address</label>
+                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">{t('contact.email_address')}</label>
                 <input type="email" required className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:border-accent-gold transition-colors" placeholder="john@example.com" />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Which markets do you trade?</label>
+                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">{t('contact.which_markets')}</label>
                 <select className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:border-accent-gold transition-colors">
                   <option value="crypto">Cryptocurrency</option>
                   <option value="forex">Forex</option>
@@ -78,7 +83,7 @@ const Contact = () => {
 
               <div className="pt-2">
                 <Button type="submit" variant="primary" className="w-full">
-                  Join the Waitlist
+                  {t('contact.submit')}
                 </Button>
               </div>
             </form>

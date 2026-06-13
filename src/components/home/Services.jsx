@@ -1,35 +1,54 @@
+import { useTranslation } from 'react-i18next';
 import Card from '../common/Card';
 import SectionHeader from '../common/SectionHeader';
 
 const Services = () => {
+  const { t } = useTranslation();
+
   const servicesList = [
     {
       id: "signals",
-      title: "Premium Trading Signals",
-      description: "Receive real-time, highly accurate entry, target, and stop-loss levels directly to your device. We do the heavy lifting analysis so you can execute with confidence.",
+      title: t('services.signals.title'),
+      description: t('services.signals.desc'),
       icon: "📈",
-      features: ["Exact entry & exit points", "Risk:Reward ratio breakdowns", "Real-time trade management updates"]
+      features: [
+        t('services.signals.f1'),
+        t('services.signals.f2'),
+        t('services.signals.f3')
+      ]
     },
     {
       id: "analysis",
-      title: "In-Depth Market Analysis",
-      description: "Understand the 'why' behind the market movements. We provide detailed chart breakdowns, macro-economic context, and technical pattern recognition.",
+      title: t('services.analysis.title'),
+      description: t('services.analysis.desc'),
       icon: "🔬",
-      features: ["Daily/Weekly market outlooks", "Multi-timeframe chart analysis", "Fundamental impact reports"]
+      features: [
+        t('services.analysis.f1'),
+        t('services.analysis.f2'),
+        t('services.analysis.f3')
+      ]
     },
     {
       id: "advisory",
-      title: "Private Wealth Advisory",
-      description: "Tailored portfolio management and one-on-one consultation for high-net-worth individuals looking to optimize their exposure across global markets.",
+      title: t('services.advisory.title'),
+      description: t('services.advisory.desc'),
       icon: "💼",
-      features: ["Custom portfolio structuring", "Risk exposure management", "Direct access to senior analysts"]
+      features: [
+        t('services.advisory.f1'),
+        t('services.advisory.f2'),
+        t('services.advisory.f3')
+      ]
     },
     {
       id: "education",
-      title: "Trading Mastery Program",
-      description: "Elevate your own trading skills with our comprehensive educational resources. Learn the exact strategies our analysts use to conquer the markets.",
+      title: t('services.education.title'),
+      description: t('services.education.desc'),
       icon: "🎓",
-      features: ["Technical analysis masterclasses", "Trading psychology workshops", "Live trading room access"]
+      features: [
+        t('services.education.f1'),
+        t('services.education.f2'),
+        t('services.education.f3')
+      ]
     }
   ];
 
@@ -45,8 +64,8 @@ const Services = () => {
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <SectionHeader 
-          title="Our Premium Services" 
-          subtitle="What We Offer" 
+          title={t('services.title')} 
+          subtitle={t('services.section_title')} 
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">

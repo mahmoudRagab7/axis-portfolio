@@ -1,9 +1,14 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import { useTranslation } from 'react-i18next';
 import ThemeToggle from '../common/ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const AdminLayout = () => {
+  const { t } = useTranslation();
+  const { isRtl } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -17,20 +22,20 @@ const AdminLayout = () => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin', icon: '📊' },
-    { name: 'Manage Results', path: '/admin/results', icon: '📈' },
-    { name: 'Manage Markets', path: '/admin/markets', icon: '🌍' },
+    { name: t('admin.sidebar.dashboard'), path: '/admin', icon: '📊' },
+    { name: t('admin.sidebar.results'), path: '/admin/results', icon: '📈' },
+    { name: t('admin.sidebar.markets'), path: '/admin/markets', icon: '🌍' },
   ];
 
   return (
-    <div className="flex h-screen bg-bg-primary overflow-hidden">
+    <div className="flex h-screen bg-bg-primary overflow-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Sidebar */}
-      <aside className="w-64 bg-bg-secondary border-r border-border flex flex-col hidden md:flex">
+      <aside className="w-64 bg-bg-secondary border-e border-border flex flex-col hidden md:flex">
         <div className="p-6 flex items-center gap-3 border-b border-border">
           <div className="w-8 h-8 rounded bg-accent-gold flex items-center justify-center font-bold text-bg-primary text-xl">
             A
           </div>
-          <span className="font-bold text-xl tracking-wide text-text-primary">Admin Portal</span>
+          <span className="font-bold text-xl tracking-wide text-text-primary">{t('admin.sidebar.title')}</span>
         </div>
         
         <nav className="flex-1 p-4 space-y-2">
@@ -55,15 +60,19 @@ const AdminLayout = () => {
 
         <div className="p-4 border-t border-border flex flex-col gap-2">
           <div className="flex items-center justify-between px-4 py-2">
-            <span className="text-sm font-medium text-text-secondary">Theme</span>
+            <span className="text-sm font-medium text-text-secondary">{t('admin.layout.language')}</span>
+            <LanguageSwitcher />
+          </div>
+          <div className="flex items-center justify-between px-4 py-2">
+            <span className="text-sm font-medium text-text-secondary">{t('admin.layout.theme')}</span>
             <ThemeToggle />
           </div>
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full text-left text-text-muted hover:text-accent-red hover:bg-accent-red/10 rounded-xl transition-all duration-300 cursor-pointer"
+            className="flex items-center gap-3 px-4 py-3 w-full text-left rtl:text-right text-text-muted hover:text-accent-red hover:bg-accent-red/10 rounded-xl transition-all duration-300 cursor-pointer"
           >
             <span>🚪</span>
-            <span className="font-medium">Sign Out</span>
+            <span className="font-medium">{t('admin.sidebar.logout')}</span>
           </button>
         </div>
       </aside>
@@ -72,8 +81,14 @@ const AdminLayout = () => {
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 bg-bg-secondary border-b border-border">
-          <span className="font-bold text-lg text-text-primary">Admin Portal</span>
-          <button onClick={handleLogout} className="text-sm text-accent-red font-medium">Sign Out</button>
+          <span className="font-bold text-lg text-text-primary">{t('admin.sidebar.title')}</span>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
+            <button onClick={handleLogout} className="text-sm text-accent-red font-medium ms-2">
+              {t('admin.sidebar.logout')}
+            </button>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-8">

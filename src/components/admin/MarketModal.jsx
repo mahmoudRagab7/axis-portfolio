@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../common/Button';
 
 const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
+    nameAr: '',
     slug: '',
     icon: '',
     order: 1,
@@ -15,9 +18,16 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
   // Populate form when editing an existing market
   useEffect(() => {
     if (market) {
-      setFormData(market);
+      setFormData({
+        name: market.name || '',
+        nameAr: market.nameAr || '',
+        slug: market.slug || '',
+        icon: market.icon || '📈',
+        order: market.order || 1,
+        isActive: market.isActive !== undefined ? market.isActive : true
+      });
     } else {
-      setFormData({ name: '', slug: '', icon: '📈', order: 1, isActive: true });
+      setFormData({ name: '', nameAr: '', slug: '', icon: '📈', order: 1, isActive: true });
     }
   }, [market, isOpen]);
 
@@ -47,7 +57,7 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
       onClose();
     } catch (error) {
       console.error(error);
-      alert("Failed to save market. Check console for details.");
+      alert(t('errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +68,7 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
       <div className="bg-bg-secondary w-full max-w-md rounded-2xl border border-border shadow-2xl overflow-hidden">
         <div className="flex justify-between items-center p-6 border-b border-border">
           <h2 className="text-xl font-bold text-text-primary">
-            {market ? 'Edit Market' : 'Add New Market'}
+            {market ? t('admin.markets.edit_market') : t('admin.markets.add_new')}
           </h2>
           <button onClick={onClose} className="text-text-muted hover:text-accent-red transition-colors">
             ✕
@@ -67,7 +77,7 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">Market Name</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('admin.markets.name')}</label>
             <input
               type="text"
               name="name"
@@ -81,8 +91,21 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('admin.markets.name_ar')}</label>
+            <input
+              type="text"
+              name="nameAr"
+              value={formData.nameAr}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 bg-bg-primary border border-border rounded-lg text-text-primary focus:outline-none focus:border-accent-gold"
+              placeholder="مثال: سوق الأسهم الأمريكية"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              URL Slug <span className="text-xs font-normal text-text-muted">(Must be unique)</span>
+              {t('admin.markets.slug')} <span className="text-xs font-normal text-text-muted">(Must be unique)</span>
             </label>
             <input
               type="text"
@@ -98,7 +121,7 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">Icon (Emoji/Text)</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">{t('admin.markets.icon')}</label>
               <input
                 type="text"
                 name="icon"
@@ -139,10 +162,10 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
 
           <div className="flex justify-end gap-3 pt-6 mt-4 border-t border-border">
             <Button variant="secondary" onClick={onClose} type="button">
-              Cancel
+              {t('admin.markets.cancel')}
             </Button>
             <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Market'}
+              {loading ? t('admin.statistics.saving') : t('admin.markets.save')}
             </Button>
           </div>
         </form>

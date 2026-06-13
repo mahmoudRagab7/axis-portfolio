@@ -1,7 +1,24 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
+
+  const quickLinks = [
+    { name: t('nav.home'), href: '/' },
+    { name: t('nav.about'), href: '#about' },
+    { name: t('nav.services'), href: '#services' },
+    { name: t('nav.results'), href: '#results' },
+  ];
+
+  const markets = [
+    { name: t('footer.markets.us', 'US Stock Market'), icon: '🇺🇸' },
+    { name: t('footer.markets.eg', 'Egyptian Exchange'), icon: '🇪🇬' },
+    { name: t('footer.markets.sa', 'Saudi Market (Tadawul)'), icon: '🇸🇦' },
+    { name: t('footer.markets.crypto', 'Cryptocurrencies'), icon: '₿' },
+    { name: t('footer.markets.forex', 'Forex Trading'), icon: '💱' },
+  ];
 
   return (
     <footer className="bg-bg-secondary pt-16 pb-8 border-t border-border mt-auto relative overflow-hidden">
@@ -29,7 +46,7 @@ const Footer = () => {
               </span>
             </Link>
             <p className="text-text-secondary text-sm leading-relaxed mb-6">
-              Empowering your financial journey with premium trading analysis, highly accurate signals, and expert advisory across global markets.
+              {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-4">
               {/* Social Icons (Placeholders using simple CSS/HTML for now) */}
@@ -43,13 +60,13 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-text-primary font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-text-primary font-semibold mb-4">{t('footer.quick_links')}</h4>
             <ul className="space-y-2">
-              {['Home', 'About Us', 'Services', 'Results'].map((link) => (
-                <li key={link}>
-                  <a href={`#${link.toLowerCase().replace(' ', '-')}`} className="text-text-secondary hover:text-accent-gold text-sm transition-colors flex items-center gap-2 group">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <a href={link.href} className="text-text-secondary hover:text-accent-gold text-sm transition-colors flex items-center gap-2 group">
                     <span className="w-1 h-1 rounded-full bg-accent-gold/50 group-hover:bg-accent-gold transition-colors"></span>
-                    {link}
+                    {link.name}
                   </a>
                 </li>
               ))}
@@ -58,17 +75,11 @@ const Footer = () => {
 
           {/* Markets */}
           <div>
-            <h4 className="text-text-primary font-semibold mb-4">Markets Covered</h4>
+            <h4 className="text-text-primary font-semibold mb-4">{t('footer.markets_covered')}</h4>
             <ul className="space-y-2">
-              {[
-                { name: 'US Stock Market', icon: '🇺🇸' },
-                { name: 'Egyptian Exchange', icon: '🇪🇬' },
-                { name: 'Saudi Market (Tadawul)', icon: '🇸🇦' },
-                { name: 'Cryptocurrencies', icon: '₿' },
-                { name: 'Forex Trading', icon: '💱' },
-              ].map((market) => (
+              {markets.map((market) => (
                 <li key={market.name}>
-                  <a href={`#results`} className="text-text-secondary hover:text-accent-gold text-sm transition-colors flex items-center gap-2">
+                  <a href="#results" className="text-text-secondary hover:text-accent-gold text-sm transition-colors flex items-center gap-2">
                     <span>{market.icon}</span> {market.name}
                   </a>
                 </li>
@@ -78,19 +89,19 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="text-text-primary font-semibold mb-4">Contact Us</h4>
+            <h4 className="text-text-primary font-semibold mb-4">{t('footer.contact_us')}</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-text-secondary">
                 <span className="text-accent-gold mt-0.5">📧</span>
-                <a href="mailto:support@axisportfolio.com" className="hover:text-accent-gold transition-colors">support@axisportfolio.com</a>
+                <a href={`mailto:${t('footer.email_link', 'support@axisportfolio.com')}`} className="hover:text-accent-gold transition-colors">{t('footer.email_link', 'support@axisportfolio.com')}</a>
               </li>
               <li className="flex items-start gap-3 text-sm text-text-secondary">
                 <span className="text-accent-gold mt-0.5">💬</span>
-                <a href="#telegram" className="hover:text-accent-gold transition-colors">Join our Telegram channel</a>
+                <a href="#telegram" className="hover:text-accent-gold transition-colors">{t('footer.telegram_link')}</a>
               </li>
               <li className="flex items-start gap-3 text-sm text-text-secondary">
                 <span className="text-accent-gold mt-0.5">📍</span>
-                <span>Global Digital Advisory</span>
+                <span>{t('footer.location')}</span>
               </li>
             </ul>
           </div>
@@ -99,12 +110,12 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-text-muted text-xs">
-            &copy; {currentYear} AXIS Portfolio. All rights reserved.
+            &copy; {currentYear} AXIS Portfolio. {t('footer.copyright')}
           </p>
           <div className="flex items-center gap-6 text-xs text-text-muted">
-            <a href="#privacy" className="hover:text-text-primary transition-colors">Privacy Policy</a>
-            <a href="#terms" className="hover:text-text-primary transition-colors">Terms of Service</a>
-            <a href="#disclaimer" className="hover:text-text-primary transition-colors">Risk Disclaimer</a>
+            <a href="#privacy" className="hover:text-text-primary transition-colors">{t('footer.privacy')}</a>
+            <a href="#terms" className="hover:text-text-primary transition-colors">{t('footer.terms')}</a>
+            <a href="#disclaimer" className="hover:text-text-primary transition-colors">{t('footer.disclaimer')}</a>
           </div>
         </div>
         <div className='flex justify-center m-4 text-text-secondary text-sm hidden'>Made By Zikovic</div>

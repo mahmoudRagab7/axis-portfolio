@@ -57,11 +57,13 @@
   - `firebase`
   - `framer-motion`
   - `axios`
+  - `i18next`, `react-i18next`, and `i18next-browser-languagedetector`
 - [ ] Configure Tailwind CSS v4
 - [ ] Set up the full folder structure (`components/`, `pages/`, `services/`, `hooks/`, `config/`, `context/`, `routes/`, `utils/`)
 - [x] ~~Create `.env` and `.env.example`~~ ✅ Already done
 - [x] ~~Create `src/firebaseConfig.js`~~ ✅ Already done
 - [ ] Move firebase config to `src/config/firebase.js` (proper folder structure)
+- [ ] Create `src/config/i18n.js` and JSON translation files (`src/locales/en.json`, `src/locales/ar.json`)
 - [ ] Create `src/routes/AppRoutes.jsx` with placeholder routes
 - [ ] Create `src/App.jsx` wired to the router
 - [ ] Verify the app runs with `npm run dev`
@@ -87,11 +89,13 @@
 ### Tasks
 
 - [ ] Build `Navbar.jsx` — logo, nav links, responsive hamburger menu
+- [ ] Build `LanguageSwitcher.jsx` — component with country flags (e.g., 🇺🇸 EN / 🇪🇬 AR) and add it to `Navbar`
 - [ ] Build `Footer.jsx` — company info, social links, quick nav
 - [ ] Build `PublicLayout.jsx` — wraps Navbar + `<Outlet />` + Footer
 - [ ] Set up routes: `/` (Home), `*` (404 Not Found)
 - [ ] Build `NotFound.jsx` page
 - [ ] Add smooth scroll navigation (clicking nav link scrolls to section)
+- [ ] Implement dynamic `dir="rtl"` toggling on the `<html>` tag for Arabic language
 - [ ] Ensure responsive on mobile/tablet/desktop
 
 ### ⚠️ NOTE — Company Logo
@@ -117,6 +121,7 @@
 - [ ] Build `SectionHeader.jsx` — reusable section title component
 - [ ] Build `Button.jsx` — reusable button with variants (primary, secondary, outline)
 - [ ] Build `Card.jsx` — reusable card wrapper
+- [ ] Apply `useTranslation()` hook for all static strings in these components instead of hardcoding
 - [ ] Add Google Fonts (Inter, Space Grotesk)
 - [ ] Add Framer Motion scroll reveal animations to each section
 - [ ] Mobile responsiveness for all sections
@@ -147,9 +152,13 @@
 - [ ] Create `src/services/marketService.js` — CRUD for markets collection
 - [ ] Create `src/services/statisticsService.js` — Read/update statistics
 - [ ] Create `src/services/cloudinaryService.js` — Upload images to Cloudinary
+- [ ] Create `src/config/apiClient.js` — Axios instance with `Accept-Language` header
+- [ ] Ensure `cloudinaryService.js` uses `apiClient` instead of plain `axios`
+- [ ] Sync Firebase Auth language with i18next in `src/config/firebase.js` (`auth.languageCode = i18n.language`)
 - [ ] Create `src/hooks/useResults.js` — Fetch & filter results
 - [ ] Create `src/hooks/useMarkets.js` — Fetch markets
 - [ ] Create `src/hooks/useStatistics.js` — Fetch statistics
+- [ ] Create `src/hooks/useLanguage.js` — Language state and toggle logic
 - [ ] Seed initial data into Firestore:
   - 5 default markets (US, Egypt, Saudi, Crypto, Forex)
   - 1 statistics document with default values
@@ -203,7 +212,8 @@
 - [ ] Build `src/routes/PrivateRoute.jsx` — redirects to login if not authenticated
 - [ ] Set up admin routes under `/admin/*`
 - [ ] Build `AdminLayout.jsx` — sidebar + content area
-- [ ] Handle auth errors (wrong password, network error)
+- [ ] Create `src/utils/errorHandler.js` — maps Firebase error codes to localized messages
+- [ ] Handle auth errors (wrong password, user not found) using `getLocalizedError()`
 - [ ] Add loading state during auth check
 - [ ] Persist session across page refreshes
 

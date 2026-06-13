@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import { getLocalizedError } from '../../utils/errorHandler';
 import Button from '../../components/common/Button';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +30,7 @@ const Login = () => {
       navigate('/admin');
     } catch (err) {
       console.error(err);
-      setError('Invalid email or password. Access denied.');
+      setError(getLocalizedError(err, t));
     } finally {
       setLoading(false);
     }
@@ -43,8 +46,8 @@ const Login = () => {
           <div className="w-12 h-12 rounded bg-accent-gold flex items-center justify-center font-bold text-bg-primary text-3xl mx-auto mb-4">
             A
           </div>
-          <h1 className="text-2xl font-bold text-text-primary">Admin Portal</h1>
-          <p className="text-text-muted text-sm mt-2">Authorized personnel only.</p>
+          <h1 className="text-2xl font-bold text-text-primary">{t('admin.login.portal_title')}</h1>
+          <p className="text-text-muted text-sm mt-2">{t('admin.login.personnel_only')}</p>
         </div>
 
         {error && (
@@ -55,19 +58,19 @@ const Login = () => {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Email Address</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('admin.login.email')}</label>
             <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-bg-primary border border-border rounded-lg text-text-primary focus:outline-none focus:border-accent-gold transition-colors"
-              placeholder="admin@example.com"
-              required
+               type="email" 
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+               className="w-full px-4 py-3 bg-bg-primary border border-border rounded-lg text-text-primary focus:outline-none focus:border-accent-gold transition-colors"
+               placeholder="admin@example.com"
+               required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Password</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('admin.login.password')}</label>
             <div className="relative">
               <input 
                 type={showPassword ? "text" : "password"}
@@ -80,7 +83,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+                className="absolute right-3 rtl:left-3 rtl:right-auto top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
               >
                 {showPassword ? (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -97,7 +100,7 @@ const Login = () => {
           </div>
 
           <Button type="submit" variant="primary" className="w-full mt-4" disabled={loading}>
-            {loading ? 'Authenticating...' : 'Secure Login'}
+            {loading ? t('admin.login.authenticating') : t('admin.login.secure_login')}
           </Button>
         </form>
       </div>

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import apiClient from '../config/apiClient';
 
 /**
  * Uploads an image to Cloudinary via unsigned preset.
@@ -23,7 +23,7 @@ export const uploadImage = async (file) => {
   formData.append('folder', 'axis-portfolio'); // Optional but keeps things organized
 
   try {
-    const response = await axios.post(url, formData);
+    const response = await apiClient.post(url, formData);
     return response.data.secure_url;
   } catch (error) {
     console.error("Cloudinary Upload Error:", error);

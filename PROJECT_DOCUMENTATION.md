@@ -1,7 +1,7 @@
 # AXIS Portfolio — Project Documentation
 
 > **Financial Trading Company Portfolio Web Application**
-> Last updated: May 2026
+> Last updated: June 2026
 
 ---
 
@@ -28,6 +28,7 @@
 19. [Development Order](#19-development-order)
 20. [Scalability Ideas](#20-scalability-ideas)
 21. [Future Enhancements](#21-future-enhancements)
+22. [Internationalization (i18n)](#22-internationalization-i18n)
 
 ---
 
@@ -60,6 +61,7 @@ Visitors can **filter trading results by market**, view before/after trade analy
 | **Statistics Section** | Animated counters: total trades, success rate, markets covered, years active |
 | **Markets Filter** | Interactive filter tabs: US, Egypt, Saudi, Crypto, Forex (expandable) |
 | **Results Showcase** | Filterable grid of result cards with before/after images |
+| **Language Switcher** | Switch between English (🇺🇸/🇬🇧) and Arabic (🇪🇬) with flag indicators |
 | **Footer** | Contact info, social media links, quick navigation |
 | **Responsive Design** | Mobile-first, works on all screen sizes |
 
@@ -74,6 +76,7 @@ Visitors can **filter trading results by market**, view before/after trade analy
 | **Delete Result** | Remove results with confirmation dialog |
 | **Manage Markets** | Add/edit/remove market categories |
 | **Manage Statistics** | Update the public statistics section values |
+| **Language Switcher** | Admin UI localized in multiple languages |
 | **Logout** | Secure session termination |
 
 ### 2.3 Result Card Data Model
@@ -85,7 +88,7 @@ Each trading result contains:
 - beforeImage: string      → Firebase Storage URL
 - afterImage: string       → Firebase Storage URL
 - successPercentage: number → e.g., 85
-- description: string      → Trade analysis description
+- description: object      → Localized: { en: "English desc", ar: "Arabic desc" }
 - date: timestamp          → When the trade was made
 - market: string           → "us" | "egypt" | "saudi" | "crypto" | "forex"
 - createdAt: timestamp     → Auto-generated
@@ -154,6 +157,8 @@ Landing Page
 | **Tailwind CSS** | v4 | Utility-first CSS framework |
 | **Axios** | latest | HTTP client (optional, Firebase SDK handles most) |
 | **Framer Motion** | latest | Animations & transitions |
+| **i18next / react-i18next** | latest | Internationalization (i18n) & translation |
+| **i18next-browser-languagedetector** | latest | Auto-detect user's browser language |
 
 ### Backend / BaaS
 
@@ -250,7 +255,10 @@ service cloud.firestore {
 {
   "id": "auto-generated",
   "stockName": "AAPL",
-  "description": "Apple stock analysis showing bullish breakout pattern",
+  "description": {
+    "en": "Apple stock analysis showing bullish breakout pattern",
+    "ar": "تحليل سهم أبل يظهر نمط اختراق صعودي"
+  },
   "successPercentage": 87,
   "market": "us",
   "beforeImage": "https://res.cloudinary.com/doy677kax/image/upload/...",
@@ -266,7 +274,10 @@ service cloud.firestore {
 ```json
 {
   "id": "us",
-  "name": "US Market",
+  "name": {
+    "en": "US Market",
+    "ar": "السوق الأمريكي"
+  },
   "slug": "us",
   "icon": "🇺🇸",
   "order": 1,
@@ -357,7 +368,8 @@ axis-portifolio/
 │   │   │   ├── Card.jsx
 │   │   │   ├── Loader.jsx
 │   │   │   ├── Modal.jsx
-│   │   │   └── SectionHeader.jsx
+│   │   │   ├── SectionHeader.jsx
+│   │   │   └── LanguageSwitcher.jsx  # EN/AR toggle with country flags
 │   │   ├── layout/              # Layout components
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── Footer.jsx
@@ -389,7 +401,12 @@ axis-portifolio/
 │   │       ├── Markets.jsx
 │   │       └── Statistics.jsx
 │   ├── config/
-│   │   └── firebase.js          # Firebase initialization
+│   │   ├── firebase.js          # Firebase initialization
+│   │   ├── i18n.js              # i18next configuration & language setup
+│   │   └── apiClient.js         # Axios instance with Accept-Language header
+│   ├── locales/                   # Translation files (bundled, not lazy-loaded)
+│   │   ├── en.json              # English translations
+│   │   └── ar.json              # Arabic translations
 │   ├── services/
 │   │   ├── resultService.js     # Firestore CRUD for results
 │   │   ├── marketService.js     # Firestore CRUD for markets
@@ -398,7 +415,8 @@ axis-portifolio/
 │   ├── hooks/
 │   │   ├── useAuth.js           # Auth state hook
 │   │   ├── useResults.js        # Results fetching hook
-│   │   └── useMarkets.js        # Markets fetching hook
+│   │   ├── useMarkets.js        # Markets fetching hook
+│   │   └── useLanguage.js       # Language state & toggle hook
 │   ├── context/
 │   │   └── AuthContext.jsx      # Auth context provider
 │   ├── routes/
@@ -406,7 +424,8 @@ axis-portifolio/
 │   │   └── PrivateRoute.jsx     # Auth-protected route wrapper
 │   ├── utils/
 │   │   ├── helpers.js           # Utility functions
-│   │   └── constants.js         # App-wide constants
+│   │   ├── constants.js         # App-wide constants
+│   │   └── errorHandler.js      # Firebase error → localized message mapper
 │   ├── App.jsx                  # Root component
 │   ├── main.jsx                 # Entry point
 │   └── index.css                # Global styles / Tailwind directives
@@ -441,6 +460,7 @@ axis-portifolio/
 | **Success indicators** | Green for high %, yellow for medium, red for low |
 | **Hover effects** | Cards lift with shadow on hover |
 | **Counter animation** | Statistics numbers count up when scrolled into view |
+| **RTL Support** | App layout flips to Right-To-Left (`dir="rtl"`) automatically when Arabic is selected. |
 
 ### Typography
 
@@ -546,6 +566,7 @@ App
 | `Modal` | isOpen, onClose, children | Image preview, confirmations |
 | `ResultCard` | result data object | Single result display |
 | `MarketFilter` | markets, activeMarket, onChange | Market tab switcher |
+| `LanguageSwitcher` | none | Toggle between English/Arabic with flags |
 
 ### Key Design Patterns
 
@@ -565,6 +586,7 @@ No external state library needed. The app is simple enough for:
 | State Type | Solution | Scope |
 |-----------|----------|-------|
 | Auth state | `AuthContext` + `useAuth` hook | Global |
+| Language state | `i18next` + `useLanguage` hook (persisted in localStorage) | Global |
 | Results data | `useResults` custom hook | Page-level |
 | Markets data | `useMarkets` custom hook | Page-level |
 | Statistics | `useStatistics` custom hook | Page-level |
@@ -622,6 +644,7 @@ Component mounts
 | **Admin Route** | Wrap with `PrivateRoute` that checks `onAuthStateChanged` |
 | **Image Upload** | Validate file type and size before upload (client-side) |
 | **Input Validation** | Sanitize all admin form inputs before writing to Firestore |
+| **Internationalization** | Set `firebase.auth().languageCode = i18n.language` to localize Firebase errors, and append `Accept-Language` headers to any external API requests (e.g. Axios) so the backend returns errors in the active language. |
 | **CORS** | Firebase & Cloudinary handle this automatically |
 | **Rate Limiting** | Firebase has built-in rate limiting |
 
@@ -817,7 +840,7 @@ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 
 | **More Markets** | Markets are dynamic from Firestore — just add new documents |
 | **Pagination** | Add Firestore cursor-based pagination for results |
 | **Search** | Add client-side search or Algolia integration |
-| **Multi-language** | Add i18n with `react-i18next` (Arabic, English) |
+| **Multi-language** | ✅ Implemented — i18n with `react-i18next` (English + Arabic). See [Section 22](#22-internationalization-i18n) |
 | **Blog** | New Firestore collection + public blog pages |
 | **User Accounts** | Enable Firebase Auth for public users (premium content) |
 | **Analytics** | Firebase Analytics or Google Analytics 4 |
@@ -842,6 +865,264 @@ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 
 - [ ] **WhatsApp Integration** — Direct chat button
 - [ ] **Pricing Plans** — If the company offers subscription tiers
 - [ ] **Video Results** — Support video uploads alongside images
+
+---
+
+## 22. Internationalization (i18n)
+
+> The application supports **English** and **Arabic** with full RTL layout support.
+> The admin dashboard is also fully translated.
+
+### 22.1 i18n Library Stack
+
+| Package | Purpose |
+|---------|---------|
+| `i18next` | Core internationalization framework |
+| `react-i18next` | React bindings — `useTranslation()` hook, `<Trans>` component |
+| `i18next-browser-languagedetector` | Auto-detect user's browser language on first visit |
+
+### 22.2 Supported Languages
+
+| Language | Code | Direction | Flag | Default? |
+|----------|------|-----------|------|----------|
+| English | `en` | LTR | 🇺🇸 | Fallback default |
+| Arabic | `ar` | RTL | 🇪🇬 | Auto-detected if browser is Arabic |
+
+**Default language selection logic:**
+1. Check `localStorage` for a previously saved preference
+2. If none, detect the browser's `navigator.language`
+3. If the browser language is Arabic (`ar`, `ar-EG`, etc.), use Arabic
+4. Otherwise, fall back to English
+
+### 22.3 Translation File Structure
+
+Translation files are **bundled directly** (imported in `i18n.js`), not lazy-loaded from `/public/`. This avoids extra HTTP requests and prevents flash of untranslated content (FOUC).
+
+**Location:** `src/locales/en.json` and `src/locales/ar.json`
+
+**Key structure (namespace-based):**
+
+```json
+{
+  "nav": { "home": "...", "about": "...", "services": "...", "results": "...", "contact": "..." },
+  "hero": { "title": "...", "subtitle": "...", "cta_primary": "...", "cta_secondary": "..." },
+  "about": { "section_title": "...", "section_subtitle": "...", "description": "..." },
+  "services": { "section_title": "...", "items": { "signals": { "title": "...", "desc": "..." } } },
+  "statistics": { "total_trades": "...", "success_rate": "...", "markets": "...", "years": "..." },
+  "results": { "section_title": "...", "filter_all": "...", "no_results": "...", "view_details": "..." },
+  "footer": { "copyright": "...", "quick_links": "...", "contact_us": "..." },
+  "admin": {
+    "login": { "title": "...", "email": "...", "password": "...", "submit": "...", "error": "..." },
+    "dashboard": { "title": "...", "total_results": "...", "recent": "..." },
+    "sidebar": { "dashboard": "...", "results": "...", "markets": "...", "statistics": "...", "logout": "..." },
+    "results": { "add": "...", "edit": "...", "delete": "...", "stock_name": "...", "market": "..." },
+    "markets": { "manage": "...", "add_market": "...", "name": "...", "slug": "...", "icon": "..." },
+    "statistics": { "edit": "...", "total_trades": "...", "success_rate": "..." }
+  },
+  "errors": {
+    "auth_wrong_password": "...",
+    "auth_user_not_found": "...",
+    "auth_too_many_requests": "...",
+    "network_error": "...",
+    "upload_failed": "...",
+    "generic": "..."
+  },
+  "common": {
+    "loading": "...", "save": "...", "cancel": "...", "delete": "...",
+    "edit": "...", "add": "...", "confirm": "...", "success": "...", "no_results": "..."
+  }
+}
+```
+
+### 22.4 i18n Configuration (`src/config/i18n.js`)
+
+```javascript
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import en from '../locales/en.json';
+import ar from '../locales/ar.json';
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: en },
+      ar: { translation: ar },
+    },
+    fallbackLng: 'en',
+    interpolation: { escapeValue: false },
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+  });
+
+export default i18n;
+```
+
+### 22.5 RTL (Right-to-Left) Support
+
+When Arabic is selected, the app dynamically sets `dir="rtl"` and `lang="ar"` on the `<html>` element:
+
+```javascript
+// In App.jsx — listens to i18next language changes
+useEffect(() => {
+  const handleLangChange = (lng) => {
+    document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lng;
+  };
+  handleLangChange(i18n.language);
+  i18n.on('languageChanged', handleLangChange);
+  return () => i18n.off('languageChanged', handleLangChange);
+}, []);
+```
+
+**CSS Strategy:**
+- Use Tailwind v4 **logical properties** (`ps-4`, `pe-4`, `ms-auto`, `me-auto`) instead of directional (`pl-4`, `pr-4`) wherever possible — these are automatically RTL-aware.
+- Add `[dir="rtl"]` CSS overrides in `index.css` for any custom components that don't use logical properties.
+- Arabic text uses the `font-family` fallback with system Arabic fonts.
+
+### 22.6 Language Switcher Component
+
+**Location:** `src/components/common/LanguageSwitcher.jsx`
+
+**Design:**
+- Pill-shaped toggle with two options side by side
+- Each option shows: **Country flag emoji + language code** (e.g., `🇺🇸 EN` | `🇪🇬 AR`)
+- Active language has gold accent highlight background
+- Smooth slide animation on toggle
+- Compact — fits in the Navbar without clutter
+- Uses emoji flags (lightweight, no image assets needed)
+
+```
+┌───────────────────┐
+│  🇺🇸 EN │ 🇪🇬 AR  │    ← Pill toggle in Navbar
+│  ████   │         │    ← Gold highlight = active
+└───────────────────┘
+```
+
+**Behavior on toggle:**
+1. Calls `i18n.changeLanguage(newLang)`
+2. Language is persisted to `localStorage`
+3. `document.documentElement.dir` and `.lang` update automatically
+4. `auth.languageCode` syncs with Firebase Auth
+5. All components re-render with new translations instantly (no page reload)
+
+### 22.7 Accept-Language Header on HTTP Requests
+
+An Axios instance (`src/config/apiClient.js`) automatically attaches the `Accept-Language` header to all outgoing HTTP requests:
+
+```javascript
+import axios from 'axios';
+import i18n from './i18n';
+
+const apiClient = axios.create();
+
+apiClient.interceptors.request.use((config) => {
+  config.headers['Accept-Language'] = i18n.language;
+  return config;
+});
+
+export default apiClient;
+```
+
+**Usage:** All services that make HTTP calls (e.g., `cloudinaryService.js`) use `apiClient` instead of plain `axios`.
+
+### 22.8 Firebase Auth Language Sync
+
+Firebase Auth's built-in messages (e.g., password reset emails, verification emails) are sent in the user's selected language:
+
+```javascript
+// In src/config/firebase.js
+import i18n from './i18n';
+
+auth.languageCode = i18n.language;
+i18n.on('languageChanged', (lng) => {
+  auth.languageCode = lng;
+});
+```
+
+### 22.9 Localized Error Messages
+
+A utility (`src/utils/errorHandler.js`) maps Firebase error codes to i18n translation keys:
+
+```javascript
+import i18n from '../config/i18n';
+
+const firebaseErrorMap = {
+  'auth/wrong-password':         'errors.auth_wrong_password',
+  'auth/user-not-found':         'errors.auth_user_not_found',
+  'auth/too-many-requests':      'errors.auth_too_many_requests',
+  'auth/invalid-credential':     'errors.auth_wrong_password',
+  'auth/network-request-failed': 'errors.network_error',
+};
+
+export function getLocalizedError(error) {
+  const code = error?.code;
+  const key = firebaseErrorMap[code] || 'errors.generic';
+  return i18n.t(key);
+}
+```
+
+All error messages displayed to the user (login errors, upload failures, network issues) go through this function, ensuring they always appear in the selected language.
+
+### 22.10 useLanguage Hook
+
+**Location:** `src/hooks/useLanguage.js`
+
+Convenience hook for components that need language state:
+
+```javascript
+import { useTranslation } from 'react-i18next';
+
+export function useLanguage() {
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  const isRTL = currentLanguage === 'ar';
+  const toggleLanguage = () => {
+    i18n.changeLanguage(currentLanguage === 'ar' ? 'en' : 'ar');
+  };
+  const setLanguage = (lang) => i18n.changeLanguage(lang);
+  return { currentLanguage, isRTL, toggleLanguage, setLanguage };
+}
+```
+
+### 22.11 Component Translation Pattern
+
+All user-facing strings use the `useTranslation()` hook — **no hardcoded strings**:
+
+```jsx
+// ❌ Before (hardcoded):
+<h1>Navigate Markets with Confidence</h1>
+
+// ✅ After (translated):
+const { t } = useTranslation();
+<h1>{t('hero.title')}</h1>
+```
+
+This applies to:
+- All public sections (Hero, About, Services, Statistics, Results, Footer)
+- Navbar links
+- Admin dashboard (Login, Sidebar, Dashboard, all CRUD forms)
+- Error messages and toast notifications
+- Loading states and empty states
+
+### 22.12 Adding a New Language in the Future
+
+To add a new language (e.g., French):
+
+1. Create `src/locales/fr.json` with the same key structure as `en.json`
+2. Import it in `src/config/i18n.js` and add to `resources`:
+   ```javascript
+   import fr from '../locales/fr.json';
+   // ...
+   resources: { en: {...}, ar: {...}, fr: { translation: fr } }
+   ```
+3. Add the new option to `LanguageSwitcher.jsx` with appropriate flag emoji
+4. If the language is RTL, add it to the RTL check in `App.jsx`
+5. No backend changes needed
 
 ---
 

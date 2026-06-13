@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMarkets } from '../../hooks/useMarkets';
 import { addMarket, updateMarket, deleteMarket } from '../../services/marketService';
 import MarketModal from '../../components/admin/MarketModal';
 import Button from '../../components/common/Button';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const Markets = () => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const { markets, loading, error, refetch } = useMarkets();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMarket, setEditingMarket] = useState(null);
@@ -29,13 +33,13 @@ const Markets = () => {
   };
 
   const handleDelete = async (slug, name) => {
-    if (window.confirm(`Are you sure you want to delete the market "${name}"? This action cannot be undone.`)) {
+    if (window.confirm(t('admin.markets.delete_confirm'))) {
       try {
         await deleteMarket(slug);
         await refetch();
       } catch (err) {
         console.error(err);
-        alert("Failed to delete market.");
+        alert(t('errors.generic'));
       }
     }
   };
@@ -46,46 +50,46 @@ const Markets = () => {
       await refetch();
     } catch (err) {
       console.error(err);
-      alert("Failed to update status.");
+      alert(t('errors.generic'));
     }
   };
 
   if (loading) {
-    return <div className="text-text-secondary animate-pulse p-4">Loading markets...</div>;
+    return <div className="text-text-secondary animate-pulse p-4">{t('common.loading')}</div>;
   }
 
   if (error) {
-    return <div className="text-accent-red p-4">Error loading markets: {error}</div>;
+    return <div className="text-accent-red p-4">{t('errors.generic')}: {error}</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">Manage Markets</h1>
-          <p className="text-text-secondary mt-1 text-sm md:text-base">Configure the financial markets covered in your portfolio.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">{t('admin.markets.title')}</h1>
+          <p className="text-text-secondary mt-1 text-sm md:text-base">{t('footer.tagline')}</p>
         </div>
         <Button variant="primary" onClick={() => handleOpenModal()}>
-          + Add New Market
+          + {t('admin.markets.add_new')}
         </Button>
       </div>
 
       <div className="bg-bg-secondary rounded-2xl border border-border overflow-hidden shadow-lg overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[600px]">
+        <table className="w-full text-left rtl:text-right border-collapse min-w-[600px]">
           <thead>
             <tr className="bg-bg-tertiary border-b border-border">
-              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">Icon & Name</th>
-              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">Slug</th>
+              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">{t('admin.markets.name')}</th>
+              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">{t('admin.markets.slug')}</th>
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">Order</th>
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">Status</th>
-              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider text-right">Actions</th>
+              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider text-right rtl:text-left">{t('admin.markets.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {markets.length === 0 ? (
               <tr>
                 <td colSpan="5" className="p-8 text-center text-text-secondary">
-                  No markets found. Add one to get started.
+                  {t('admin.results.no_results')}
                 </td>
               </tr>
             ) : (
@@ -96,7 +100,9 @@ const Markets = () => {
                       <span className="w-10 h-10 rounded bg-bg-primary border border-border flex items-center justify-center text-xl">
                         {market.icon}
                       </span>
-                      <span className="font-medium text-text-primary">{market.name}</span>
+                      <span className="font-medium text-text-primary">
+                        {language === 'ar' ? (market.nameAr || market.name) : market.name}
+                      </span>
                     </div>
                   </td>
                   <td className="p-4 text-text-muted font-mono text-sm">{market.slug}</td>
@@ -113,19 +119,19 @@ const Markets = () => {
                       {market.isActive ? 'Active' : 'Inactive'}
                     </button>
                   </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="p-4 text-right rtl:text-left">
+                    <div className="flex items-center justify-end rtl:justify-start gap-2">
                       <button 
                         onClick={() => handleOpenModal(market)}
                         className="p-2 text-text-secondary hover:text-accent-gold transition-colors"
-                        title="Edit"
+                        title={t('admin.results.edit')}
                       >
                         ✏️
                       </button>
                       <button 
                         onClick={() => handleDelete(market.slug, market.name)}
                         className="p-2 text-text-secondary hover:text-accent-red transition-colors"
-                        title="Delete"
+                        title={t('admin.results.delete')}
                       >
                         🗑️
                       </button>

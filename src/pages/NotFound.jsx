@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../hooks/useLanguage';
 
 const NotFound = () => {
+  const { t } = useTranslation();
+  const { isRtl } = useLanguage();
+
   return (
     <div className="flex-grow flex flex-col items-center justify-center p-6 text-center h-full my-auto">
       <motion.div
@@ -18,19 +23,19 @@ const NotFound = () => {
         </div>
         
         <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4 font-heading">
-          Market Not Found
+          {t('common.notFound.title', 'Market Not Found')}
         </h2>
         
         <p className="text-text-secondary mb-8 leading-relaxed">
-          The page you are looking for doesn't exist or has been moved. Let's get you back on track to profitable trades.
+          {t('common.notFound.desc', "The page you are looking for doesn't exist or has been moved. Let's get you back on track to profitable trades.")}
         </p>
         
         <Link 
           to="/"
           className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-bg-secondary border border-border hover:border-accent-gold text-text-primary font-semibold transition-all duration-300 group shadow-lg shadow-black/20"
         >
-          <span>Return Home</span>
-          <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+          <span>{t('common.notFound.btn', 'Return Home')}</span>
+          <span className={`transition-transform duration-300 ${isRtl ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`}>→</span>
         </Link>
       </motion.div>
     </div>

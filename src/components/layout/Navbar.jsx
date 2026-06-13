@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ThemeToggle from '../common/ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -17,10 +20,10 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/#about' },
-    { name: 'Services', path: '/#services' },
-    { name: 'Results', path: '/#results' },
+    { name: t('nav.home'), path: '/' },
+    { name: t('nav.about'), path: '/#about' },
+    { name: t('nav.services'), path: '/#services' },
+    { name: t('nav.results'), path: '/#results' },
   ];
 
   return (
@@ -59,11 +62,12 @@ const Navbar = () => {
                 className="text-sm font-medium text-text-secondary hover:text-accent-gold transition-colors duration-300 relative group"
               >
                 {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
+                <span className="absolute -bottom-1 left-0 rtl:right-0 w-0 h-0.5 bg-accent-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
               </a>
             ))}
             
-            <div className="flex items-center gap-4 pl-4 border-l border-border/50">
+            <div className="flex items-center gap-4 ps-4 border-s border-border/50">
+              <LanguageSwitcher />
               <ThemeToggle />
               
               {/* CTA Button */}
@@ -71,13 +75,14 @@ const Navbar = () => {
                 href="#contact"
                 className="px-6 py-2 rounded-full bg-gradient-to-r from-accent-gold to-yellow-400 text-bg-primary font-semibold text-sm hover:shadow-[0_0_15px_rgba(240,185,11,0.4)] transition-all duration-300 transform hover:-translate-y-0.5"
               >
-                Get Signals
+                {t('nav.getSignals')}
               </a>
             </div>
           </nav>
 
           {/* Mobile Actions */}
           <div className="flex md:hidden items-center gap-4">
+            <LanguageSwitcher />
             <ThemeToggle />
             
             {/* Mobile Menu Button */}
@@ -119,7 +124,7 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className="mt-2 text-center px-6 py-3 rounded-lg bg-accent-gold text-bg-primary font-semibold text-lg"
               >
-                Get Signals
+                {t('nav.getSignals')}
               </a>
             </div>
           </motion.div>

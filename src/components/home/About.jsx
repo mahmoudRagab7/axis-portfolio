@@ -1,8 +1,34 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from '../common/SectionHeader';
 import Button from '../common/Button';
 
 const About = () => {
+  const { t } = useTranslation();
+
+  const features = [
+    {
+      icon: "🎯",
+      title: t('about.features.entries_title'),
+      desc: t('about.features.entries_desc')
+    },
+    {
+      icon: "🛡️",
+      title: t('about.features.risk_title'),
+      desc: t('about.features.risk_desc')
+    },
+    {
+      icon: "📊",
+      title: t('about.features.analysis_title'),
+      desc: t('about.features.analysis_desc')
+    },
+    {
+      icon: "🌍",
+      title: t('about.features.global_title'),
+      desc: t('about.features.global_desc')
+    }
+  ];
+
   return (
     <section id="about" className="py-24 relative overflow-hidden bg-bg-secondary/30">
       {/* Decorative background element */}
@@ -10,8 +36,8 @@ const About = () => {
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <SectionHeader 
-          title="Mastering the Markets" 
-          subtitle="About AXIS Portfolio" 
+          title={t('about.title')} 
+          subtitle={t('about.section_title')} 
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
@@ -23,49 +49,28 @@ const About = () => {
             transition={{ duration: 0.6 }}
           >
             <h3 className="text-2xl md:text-3xl font-bold text-text-primary mb-6 leading-tight">
-              We decode the complexities of global trading to deliver actionable clarity.
+              {t('about.headline')}
             </h3>
             
             <div className="space-y-6 text-text-secondary text-lg leading-relaxed">
               <p>
-                At AXIS Portfolio, we believe that consistent profitability in the financial markets isn't about luck—it's about rigorous analysis, disciplined execution, and having the right insights at the exact right moment.
+                {t('about.p1')}
               </p>
               <p>
-                Our team of seasoned analysts monitors global equities, cryptocurrencies, and forex markets 24/5. We utilize advanced technical patterns, order flow dynamics, and macroeconomic indicators to identify high-probability setups before they break out.
+                {t('about.p2')}
               </p>
             </div>
 
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <Button href="#contact" variant="primary">
-                Join Our Inner Circle
+                {t('about.cta')}
               </Button>
             </div>
           </motion.div>
 
           {/* Right side: Visual / Features Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {[
-              {
-                icon: "🎯",
-                title: "Sniper Entries",
-                desc: "We pinpoint entry zones with minimal drawdown and clear invalidation levels."
-              },
-              {
-                icon: "🛡️",
-                title: "Risk Management",
-                desc: "Capital preservation is our first priority. Every signal includes precise stop losses."
-              },
-              {
-                icon: "📊",
-                title: "Deep Analysis",
-                desc: "We don't just give signals; we provide the complete chart breakdown so you learn."
-              },
-              {
-                icon: "🌍",
-                title: "Global Reach",
-                desc: "From Wall Street to Crypto, we cover the most lucrative global markets."
-              }
-            ].map((feature, idx) => (
+            {features.map((feature, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}

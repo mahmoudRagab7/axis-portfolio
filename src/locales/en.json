@@ -1,0 +1,238 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "results": "Results",
+    "admin": "Admin",
+    "getSignals": "Get Signals"
+  },
+  "hero": {
+    "tagline": "Premium Trading Analysis",
+    "title_main": "Navigate the markets with",
+    "title_highlight": "absolute precision",
+    "subtitle": "Empowering your financial journey with highly accurate signals, expert advisory, and real-time insights across global markets.",
+    "cta_results": "View Trading Results",
+    "cta_services": "Our Services",
+    "stats": {
+      "success_rate": "Success Rate",
+      "active_markets": "Active Markets",
+      "total_trades": "Total Trades",
+      "happy_clients": "Happy Clients"
+    }
+  },
+  "about": {
+    "section_title": "About AXIS Portfolio",
+    "title": "Mastering the Markets",
+    "headline": "We decode the complexities of global trading to deliver actionable clarity.",
+    "p1": "At AXIS Portfolio, we believe that consistent profitability in the financial markets isn't about luck—it's about rigorous analysis, disciplined execution, and having the right insights at the exact right moment.",
+    "p2": "Our team of seasoned analysts monitors global equities, cryptocurrencies, and forex markets 24/5. We utilize advanced technical patterns, order flow dynamics, and macroeconomic indicators to identify high-probability setups before they break out.",
+    "cta": "Join Our Inner Circle",
+    "features": {
+      "entries_title": "Sniper Entries",
+      "entries_desc": "We pinpoint entry zones with minimal drawdown and clear invalidation levels.",
+      "risk_title": "Risk Management",
+      "risk_desc": "Capital preservation is our first priority. Every signal includes precise stop losses.",
+      "analysis_title": "Deep Analysis",
+      "analysis_desc": "We don't just give signals; we provide the complete chart breakdown so you learn.",
+      "global_title": "Global Reach",
+      "global_desc": "From Wall Street to Crypto, we cover the most lucrative global markets."
+    }
+  },
+  "services": {
+    "section_title": "What We Offer",
+    "title": "Our Premium Services",
+    "signals": {
+      "title": "Premium Trading Signals",
+      "desc": "Receive real-time, highly accurate entry, target, and stop-loss levels directly to your device. We do the heavy lifting analysis so you can execute with confidence.",
+      "f1": "Exact entry & exit points",
+      "f2": "Risk:Reward ratio breakdowns",
+      "f3": "Real-time trade management updates"
+    },
+    "analysis": {
+      "title": "In-Depth Market Analysis",
+      "desc": "Understand the 'why' behind the market movements. We provide detailed chart breakdowns, macro-economic context, and technical pattern recognition.",
+      "f1": "Daily/Weekly market outlooks",
+      "f2": "Multi-timeframe chart analysis",
+      "f3": "Fundamental impact reports"
+    },
+    "advisory": {
+      "title": "Private Wealth Advisory",
+      "desc": "Tailored portfolio management and one-on-one consultation for high-net-worth individuals looking to optimize their exposure across global markets.",
+      "f1": "Custom portfolio structuring",
+      "f2": "Risk exposure management",
+      "f3": "Direct access to senior analysts"
+    },
+    "education": {
+      "title": "Trading Mastery Program",
+      "desc": "Elevate your own trading skills with our comprehensive educational resources. Learn the exact strategies our analysts use to conquer the markets.",
+      "f1": "Technical analysis masterclasses",
+      "f2": "Trading psychology workshops",
+      "f3": "Live trading room access"
+    }
+  },
+  "contact": {
+    "section_title": "Ready to Dominate the Markets?",
+    "section_title_prefix": "Ready to",
+    "section_title_highlight": "Dominate",
+    "section_title_suffix": "the Markets?",
+    "subtitle": "Get exclusive access to premium trading signals, real-time analysis, and 1-on-1 mentorship.",
+    "email_us": "Email Us",
+    "telegram": "Telegram Channel",
+    "request_access": "Request Access",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email_address": "Email Address",
+    "which_markets": "Which markets do you trade?",
+    "submit": "Join the Waitlist",
+    "success_alert": "Thanks for your interest! We will contact you soon."
+  },
+  "footer": {
+    "tagline": "Empowering your financial journey with premium trading analysis, highly accurate signals, and expert advisory across global markets.",
+    "quick_links": "Quick Links",
+    "markets_covered": "Markets Covered",
+    "markets": {
+      "us": "US Stock Market",
+      "eg": "Egyptian Exchange",
+      "sa": "Saudi Market (Tadawul)",
+      "crypto": "Cryptocurrencies",
+      "forex": "Forex Trading"
+    },
+    "contact_us": "Contact Us",
+    "email_link": "support@axisportfolio.com",
+    "telegram_link": "Join our Telegram channel",
+    "location": "Global Digital Advisory",
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "disclaimer": "Risk Disclaimer"
+  },
+  "results_section": {
+    "title_prefix": "Recent",
+    "title_highlight": "Trading Results",
+    "subtitle": "Explore our latest technical predictions and their real-world outcomes across global markets.",
+    "all_markets": "All Markets",
+    "no_results_title": "No results found",
+    "no_results_desc": "Check back later for new trading predictions.",
+    "click_full_size": "Click to view full size",
+    "before_after_alt": "Trading Prediction Before and After"
+  },
+  "admin": {
+    "login": {
+      "portal_title": "Admin Portal",
+      "personnel_only": "Authorized personnel only.",
+      "email": "Email Address",
+      "password": "Password",
+      "authenticating": "Authenticating...",
+      "secure_login": "Secure Login",
+      "default_error": "Invalid email or password. Access denied."
+    },
+    "sidebar": {
+      "title": "AXIS Admin",
+      "dashboard": "Dashboard",
+      "markets": "Markets",
+      "results": "Results",
+      "statistics": "Statistics",
+      "logout": "Logout"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back, Admin",
+      "overview": "Overview of your portfolio metrics",
+      "total_results": "Total Results",
+      "active_markets": "Active Markets",
+      "success_rate": "Success Rate",
+      "total_trades": "Total Trades",
+      "recent_results": "Recent Results",
+      "no_recent": "No recent results added.",
+      "view_all": "View All"
+    },
+    "results": {
+      "title": "Results Management",
+      "add_new": "Add New Result",
+      "edit_result": "Edit Result",
+      "all_markets": "All Markets",
+      "stock_name": "Stock/Asset Name",
+      "market": "Market",
+      "success_pct": "Success Percentage",
+      "date": "Date",
+      "before_image": "Before Image",
+      "after_image": "After Image",
+      "description": "Description",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirm_delete": "Are you sure you want to delete this result?",
+      "no_results": "No results found. Add a new one to get started.",
+      "uploading": "Uploading...",
+      "save": "Save Result",
+      "cancel": "Cancel",
+      "success_add": "Result added successfully!",
+      "success_edit": "Result updated successfully!",
+      "success_delete": "Result deleted successfully!",
+      "no_image": "No Image",
+      "just_now": "Just now",
+      "unknown_market": "Unknown Market",
+      "select_market": "Select a market...",
+      "click_to_change": "Click to change image",
+      "click_to_upload": "Click to upload image",
+      "upload_hint": "Supports JPG, PNG, WebP (Max 10MB)"
+    },
+    "markets": {
+      "title": "Markets Management",
+      "add_new": "Add New Market",
+      "edit_market": "Edit Market",
+      "name": "Market Name (English)",
+      "name_ar": "Market Name (Arabic)",
+      "slug": "Slug",
+      "icon": "Icon (Emoji)",
+      "actions": "Actions",
+      "save": "Save Market",
+      "cancel": "Cancel",
+      "delete_confirm": "Are you sure you want to delete this market? This will affect results under this market.",
+      "success_add": "Market added successfully!",
+      "success_edit": "Market updated successfully!",
+      "success_delete": "Market deleted successfully!"
+    },
+    "statistics": {
+      "title": "Statistics Management",
+      "edit_stats": "Edit Statistics",
+      "success_rate": "Success Rate (%)",
+      "active_markets": "Active Markets Count",
+      "total_trades": "Total Trades Count",
+      "happy_clients": "Happy Clients Count",
+      "years_active": "Years Active",
+      "save": "Save Statistics",
+      "success_update": "Statistics updated successfully!",
+      "saving": "Saving..."
+    },
+    "layout": {
+      "language": "Language",
+      "theme": "Theme"
+    }
+  },
+  "errors": {
+    "auth_invalid_email": "The email address is invalid.",
+    "auth_user_disabled": "This user account has been disabled.",
+    "auth_user_not_found": "No user found with this email. Access denied.",
+    "auth_wrong_password": "Incorrect password. Access denied.",
+    "auth_invalid_credential": "Invalid email or password. Access denied.",
+    "auth_too_many_requests": "Too many failed login attempts. Please try again later.",
+    "network_error": "Network error. Please check your connection.",
+    "upload_failed": "Image upload failed. Please try again.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "common": {
+    "loading": "Loading...",
+    "no_results": "No results available",
+    "view_details": "View Details",
+    "before": "Before",
+    "after": "After",
+    "all": "All",
+    "notFound": {
+      "title": "404 - Page Not Found",
+      "desc": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+      "btn": "Back to Home"
+    }
+  }
+}
