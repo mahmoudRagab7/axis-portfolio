@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 
 const Pricing = () => {
   const { t } = useTranslation();
-  const { currentLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { plans, loading } = usePlans();
 
   // Filter active plans
@@ -43,10 +43,10 @@ const Pricing = () => {
           ) : (
             activePlans.map((plan, index) => {
               const isHighlighted = plan.isHighlighted;
-              const name = currentLanguage === 'ar' && plan.nameAr ? plan.nameAr : plan.nameEn;
-              const billingPeriod = currentLanguage === 'ar' && plan.billingPeriodAr ? plan.billingPeriodAr : plan.billingPeriodEn;
-              const features = currentLanguage === 'ar' && plan.featuresAr ? plan.featuresAr : plan.featuresEn;
-              const whatsappMsg = currentLanguage === 'ar' && plan.whatsappMessageAr ? plan.whatsappMessageAr : plan.whatsappMessageEn;
+              const name = language === 'ar' && plan.nameAr ? plan.nameAr : plan.nameEn;
+              const billingPeriod = language === 'ar' && plan.billingPeriodAr ? plan.billingPeriodAr : plan.billingPeriodEn;
+              const features = language === 'ar' && plan.featuresAr ? plan.featuresAr : plan.featuresEn;
+              const whatsappMsg = language === 'ar' && plan.whatsappMessageAr ? plan.whatsappMessageAr : plan.whatsappMessageEn;
               
               const whatsappLink = `https://wa.me/${plan.whatsappNumber?.replace(/[^0-9+]/g, '')}?text=${encodeURIComponent(whatsappMsg || '')}`;
 
