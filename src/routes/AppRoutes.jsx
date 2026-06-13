@@ -5,6 +5,7 @@ import AdminLayout from '../components/layout/AdminLayout';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 
 import Home from '../pages/Home';
+import AllResults from '../pages/public/AllResults';
 import NotFound from '../pages/NotFound';
 import SeedData from '../pages/SeedData';
 
@@ -12,6 +13,8 @@ import Login from '../pages/admin/Login';
 import Dashboard from '../pages/admin/Dashboard';
 import Markets from '../pages/admin/Markets';
 import Results from '../pages/admin/Results';
+import Plans from '../pages/admin/Plans';
+import Subscribers from '../pages/admin/Subscribers';
 
 const AppRoutes = () => {
   return (
@@ -20,6 +23,7 @@ const AppRoutes = () => {
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/results" element={<AllResults />} />
           <Route path="/seed" element={<SeedData />} />
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -33,6 +37,8 @@ const AppRoutes = () => {
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/markets" element={<Markets />} />
             <Route path="/admin/results" element={<Results />} />
+            <Route path="/admin/plans" element={<Plans />} />
+            <Route path="/admin/subscribers" element={<Subscribers />} />
           </Route>
         </Route>
       </Routes>

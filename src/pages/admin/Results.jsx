@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 import { useResults } from '../../hooks/useResults';
 import { useMarkets } from '../../hooks/useMarkets';
 import { addResult, updateResult, deleteResult } from '../../services/resultService';
@@ -40,11 +41,27 @@ const Results = () => {
     if (window.confirm(t('admin.results.confirm_delete'))) {
       try {
         await deleteResult(id);
+        toast.success(t('admin.results.deleted', 'Result deleted successfully.'));
         await refetchResults();
       } catch (err) {
         console.error(err);
-        alert(t('errors.generic'));
+        toast.error(t('errors.generic'));
       }
+    }
+  };
+
+  const handleToggleFree = async (result) => {
+    try {
+      await updateResult(result.id, { isFree: !result.isFree });
+      toast.success(
+        !result.isFree
+          ? t('admin.results.marked_free', 'Marked as Free')
+          : t('admin.results.marked_premium', 'Marked as Premium')
+      );
+      await refetchResults();
+    } catch (err) {
+      console.error(err);
+      toast.error(t('errors.generic'));
     }
   };
 
@@ -92,6 +109,7 @@ const Results = () => {
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider w-32">{t('admin.results.before_image')}</th>
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider w-40">{t('admin.results.market')}</th>
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider">{t('admin.results.description')}</th>
+              <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider w-28">{t('admin.results.type', 'Type')}</th>
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider w-32">{t('admin.results.date')}</th>
               <th className="p-4 font-semibold text-text-muted uppercase text-xs tracking-wider text-right rtl:text-left w-24">{t('admin.results.actions')}</th>
             </tr>
@@ -137,6 +155,19 @@ const Results = () => {
                       <p className="text-text-secondary text-sm line-clamp-2 max-w-md">
                         {result.description}
                       </p>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => handleToggleFree(result)}
+                        title={result.isFree ? t('admin.results.click_to_premium', 'Click to make Premium') : t('admin.results.click_to_free', 'Click to make Free')}
+                        className={`px-3 py-1 rounded-full text-xs font-bold border transition-all cursor-pointer hover:scale-105 ${
+                          result.isFree
+                            ? 'bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20'
+                            : 'bg-accent-gold/10 text-accent-gold border-accent-gold/30 hover:bg-accent-gold/20'
+                        }`}
+                      >
+                        {result.isFree ? '🔓 Free' : '🔒 Premium'}
+                      </button>
                     </td>
                     <td className="p-4 text-text-muted text-sm">{date}</td>
                     <td className="p-4 text-right rtl:text-left">

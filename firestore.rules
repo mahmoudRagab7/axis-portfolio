@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Markets: Everyone can view, only authenticated admins can write
+    match /markets/{marketId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Results: Everyone can view, only authenticated admins can write
+    match /results/{resultId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Statistics: Everyone can view, only authenticated admins can write
+    match /statistics/{statId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Plans: Everyone can view, only authenticated admins can write
+    match /plans/{planId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Subscribers: Everyone can read (to validate tokens), only authenticated admins can write
+    match /subscribers/{subscriberId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

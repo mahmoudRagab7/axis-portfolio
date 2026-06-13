@@ -23,6 +23,7 @@ const Navbar = () => {
     { name: t('nav.home'), path: '/' },
     { name: t('nav.about'), path: '/#about' },
     { name: t('nav.services'), path: '/#services' },
+    { name: t('nav.pricing'), path: '/#pricing' },
     { name: t('nav.results'), path: '/#results' },
   ];
 

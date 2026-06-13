@@ -41,6 +41,7 @@
 | 7 | Admin Dashboard — Results CRUD | Add/Edit/Delete results, image upload | ~4 hr | ⬜ |
 | 8 | Admin Dashboard — Markets & Stats | Manage markets, edit statistics | ~2 hr | ⬜ |
 | 9 | Polish & Deployment | Animations, responsive audit, SEO, deploy | ~2 hr | ⬜ |
+| **10** | **Pricing Plans + Subscription Access** | Pricing section, blur gate, subscriber system | **~5 hr** | ⬜ |
 
 ---
 
@@ -316,6 +317,450 @@
 ### Deliverable
 
 ✅ Production-ready application deployed and live.
+
+---
+
+## Phase 10: Pricing Plans + Subscription Access System
+
+**Goal:** Add a publicly visible `Pricing` section and gate premium trading results behind a lightweight subscriber check — with no payment gateway, contact is done via WhatsApp.
+
+### Overview
+
+This phase adds **two tightly coupled features:**
+
+1. **Pricing Plans Section** — Displayed on the public homepage between Services and Results. Admin can manage plan names, prices, features, and WhatsApp contact numbers.
+2. **Results Blur / Access Gate** — Non-subscribed visitors see only the **first result per market**; all remaining results are blurred with a CTA overlay. The admin can mark any phone number as a "subscriber" and generate a short access token (stored in `localStorage`) that unlocks the full results view.
+
+---
+
+### 10.1 Pricing Plans Section
+
+#### How It Works
+- Plans are stored in a new Firestore collection: `plans`
+- Admin creates/edits plans from the dashboard (name, price, currency, features list, WhatsApp number, highlighted/recommended flag)
+- Public page fetches and renders the plans as premium-styled cards
+- Each plan card has a **"Subscribe via WhatsApp"** button that opens `https://wa.me/<number>?text=<pre-filled message>`
+- No payment gateway — contact is manual, handled by the company
+
+#### Firestore Collection: `plans`
+
+```json
+{
+  "id": "auto-generated",
+  "nameEn": "Premium",
+  "nameAr": "مميز",
+  "price": "499",
+  "currency": "EGP",
+  "billingPeriodEn": "/ month",
+  "billingPeriodAr": "/ شهر",
+  "featuresEn": ["Full access to all results", "Real-time signals", "1-on-1 consultation"],
+  "featuresAr": ["وصول كامل لجميع النتائج", "توصيات فورية", "استشارة فردية"],
+  "whatsappNumber": "+201234567890",
+  "whatsappMessageEn": "Hello, I'm interested in the Premium plan.",
+  "whatsappMessageAr": "مرحباً، أنا مهتم بالخطة المميزة.",
+  "isHighlighted": true,
+  "order": 2,
+  "isActive": true
+}
+```
+
+#### New Files
+
+| File | Purpose |
+|------|---------|
+| `src/components/home/Pricing.jsx` | Public-facing pricing cards section |
+| `src/components/admin/PlanModal.jsx` | Add/Edit modal for plans |
+| `src/pages/admin/Plans.jsx` | Admin CRUD page for plans |
+| `src/services/planService.js` | Firestore CRUD for `plans` collection |
+| `src/hooks/usePlans.js` | Fetch plans hook |
+
+#### Admin Dashboard — Plans Management
+- Admin can **add, edit, delete** plans
+- Editable fields (bilingual EN/AR):
+  - Plan name (English + Arabic)
+  - Price + currency + billing period (English + Arabic)
+  - Features list (English + Arabic, one per line)
+  - WhatsApp number (international format, e.g. `+201234567890`)
+  - Pre-filled WhatsApp message (English + Arabic)
+  - Highlighted/recommended flag (shows a badge)
+  - Display order
+  - Active toggle
+- Plan added to the admin sidebar under a new **"Plans"** nav item
+
+#### Pricing Card Design
+- Dark card with gold border on highlighted plan
+- Shows: plan name, price, billing period, feature list with ✓ checkmarks
+- Gold "Recommended" badge on highlighted plan
+- Gold button: **"📱 Subscribe via WhatsApp"** — opens WhatsApp deep link
+- WhatsApp link format: `https://wa.me/<whatsappNumber>?text=<urlEncoded message>`
+- Message is rendered in the **currently active language** (EN or AR)
+- Full RTL support for Arabic
+
+---
+
+### 10.2 Results Blur / Access Gate System
+
+#### Access Levels & Two-Layer UX
+
+Instead of cluttering the homepage, we use a two-layer system:
+
+**Layer 1: Homepage Preview (Free Preview)**
+- Shows up to **4 results** per market.
+- No blur here. Guests and subscribers see the same preview.
+- A **"See All Results →"** button appears if the market has more than 4 results.
+
+**Layer 2: Full-Screen Results Overlay (Gated)**
+- Clicking "See All Results" opens a beautiful, full-screen slide-up panel (not a new page).
+- Contains the full grid of results with market tabs.
+- **For Guests:** The first result is clearly visible, but the remaining results are blurred out with the **Access Gate CTA** overlaying them.
+- **For Subscribers:** All results are fully visible.
+
+#### Subscription Check Mechanism
+
+> ⚠️ **No Firebase Auth for public users** — this uses a lightweight, admin-generated token system.
+
+**How it works:**
+
+1. Admin goes to the `Subscribers` page in the dashboard
+2. Admin enters the subscriber's **phone number** (WhatsApp number they used to contact)
+3. Admin clicks **"Generate Access Token"**
+4. System generates a secure random token and stores it in Firestore under a new `subscribers` collection
+5. Admin **sends the token to the subscriber via WhatsApp** (token shown in dashboard, easy to copy)
+6. Subscriber visits the site, clicks the **"Enter Access Token"** button in the Results section
+7. User types in their token → system validates it against Firestore
+8. If valid: token is saved to `localStorage` → full results unlock immediately
+9. If invalid: error message shown (localized)
+10. `localStorage` is checked on every page load — no re-entry needed until they clear storage or token expires
+
+#### Firestore Collection: `subscribers`
+
+```json
+{
+  "id": "auto-generated",
+  "phoneNumber": "+201234567890",
+  "token": "ax_7f3b9e2c1a4d",
+  "planId": "premium-plan-id",
+  "planNameEn": "Premium",
+  "isActive": true,
+  "expiresAt": "2026-12-31T23:59:59Z",
+  "createdAt": "2026-06-01T12:00:00Z",
+  "note": "Referred by Instagram"
+}
+```
+
+#### Token Format
+- Prefix: `ax_` (AXIS prefix for branding)
+- Random alphanumeric string: 12 characters
+- Example: `ax_7f3b9e2c1a4d`
+- Admin can revoke any token by setting `isActive: false`
+- Optional: `expiresAt` field — if set, token becomes invalid after this date
+
+#### Security Considerations
+
+> ⚠️ **Important:** This system is designed for a **trusted community / WhatsApp-based business model**, not high-security SaaS. The blur is a UX gate, not a cryptographic lock (since all data still comes from Firestore which is publicly readable). If you need stronger security in the future, Firebase Auth for public users + Firestore rules would be the upgrade path.
+
+| Risk | Mitigation |
+|------|------------|
+| Token guessing | 12-char random alphanumeric = 36^12 combinations — practically impossible to guess |
+| Token sharing | Admin can revoke tokens; monitor subscriber count vs. token count |
+| Image URLs exposed | Blurred images still load (CSS blur) — if you need server-level blocking, this requires a backend proxy (future enhancement) |
+| localStorage clearing | User loses access if they clear browser data — they contact admin for re-entry (acceptable for this model) |
+
+#### New Files for Blur System
+
+| File | Purpose |
+|------|---------|
+| `src/hooks/useSubscriber.js` | Reads token from `localStorage`, validates against Firestore, returns `{ isSubscribed, loading }` |
+| `src/components/public/AccessGate.jsx` | Blurred overlay + token entry modal shown over locked results |
+| `src/services/subscriberService.js` | Firestore calls: `validateToken(token)`, `addSubscriber(data)`, `revokeToken(id)` |
+| `src/pages/admin/Subscribers.jsx` | Admin CRUD for subscribers — view, add, generate token, revoke |
+| `src/components/admin/SubscriberModal.jsx` | Add subscriber modal with auto token generation |
+
+#### PublicResults.jsx — Updated Logic
+
+```
+Homepage Preview:
+  Show result[0..3] → Always visible (max 4)
+  If results.length > 4 → Show "See All Results →" button
+
+Full-Screen Overlay (When "See All Results" clicked):
+  Show market filter tabs
+  For selected market:
+    Show result[0] → Always visible
+    Show result[1..n] → Only if isSubscribed === true
+                      → Otherwise: render blurred grid with AccessGate overlay covering them
+
+The AccessGate overlay shows:
+  - Lock icon 🔐
+  - "Premium Content: Subscribe to unlock all trading results" (localized)
+  - "🔑 Enter Access Token" button → opens token input modal
+  - "📦 View Plans" button → closes overlay and scrolls to Pricing section
+```
+
+#### Access Gate & Full-Screen UX Design
+- **Full-Screen Overlay:** Slides up smoothly from the bottom. Has a close button (X) and responds to `Esc` key. Keeps the user on the homepage (no routing required).
+- **Blurred results:** Uses CSS `filter: blur(12px)` + `pointer-events: none` on the container of locked results.
+- **Overlay card:** Covers the blurred content area with a glassmorphism panel.
+- Shows: lock icon, localized message, two buttons.
+- **Token input modal:** Small inline modal. Has an input field + Submit button + loading state + error state.
+- **On success:** Overlay fades out, blurred results transition to clear with a smooth animation.
+- **On error:** Shakes the input, shows localized error.
+
+---
+
+### 10.3 Admin Dashboard — Subscribers Management
+
+**Page:** `/admin/subscribers`
+**Sidebar Item:** "Subscribers" 👥
+
+#### Table Columns
+| Column | Description |
+|--------|-------------|
+| Phone Number | Subscriber's WhatsApp number |
+| Plan | Which plan they subscribed to |
+| Token | The generated access token (click to copy) |
+| Status | Active / Expired / Revoked |
+| Expires At | Expiry date (or "Lifetime") |
+| Note | Internal note (e.g. "from IG ad") |
+| Actions | Copy Token / Revoke / Delete |
+
+#### Admin Actions
+- **Add Subscriber** → Enter phone, select plan, set expiry → token auto-generated
+- **Copy Token** → One-click copy to clipboard (to paste into WhatsApp chat)
+- **Revoke** → Sets `isActive: false` immediately
+- **Delete** → Removes from Firestore
+- **Filter** by status (Active / Expired / Revoked)
+
+---
+
+### 10.4 i18n — New Translation Keys
+
+New keys to add in both `en.json` and `ar.json`:
+
+```json
+{
+  "pricing": {
+    "section_title": "Simple, Transparent Pricing",
+    "subtitle": "Choose the plan that fits your trading goals.",
+    "recommended": "Recommended",
+    "per_month": "/ month",
+    "subscribe_whatsapp": "Subscribe via WhatsApp",
+    "free_trial": "Start Free Trial"
+  },
+  "access_gate": {
+    "locked_title": "Premium Content",
+    "locked_desc": "Subscribe to unlock all trading results across every market.",
+    "enter_token": "Enter Access Token",
+    "view_plans": "View Plans",
+    "token_placeholder": "e.g. ax_7f3b9e2c1a4d",
+    "token_submit": "Unlock Access",
+    "token_loading": "Validating...",
+    "token_success": "Access granted! Welcome.",
+    "token_error": "Invalid or expired token. Please try again.",
+    "token_label": "Access Token"
+  },
+  "admin": {
+    "plans": {
+      "title": "Plans Management",
+      "add_new": "Add New Plan",
+      "edit_plan": "Edit Plan",
+      "name": "Plan Name (English)",
+      "name_ar": "Plan Name (Arabic)",
+      "price": "Price",
+      "currency": "Currency",
+      "billing_period": "Billing Period (e.g. / month)",
+      "billing_period_ar": "Billing Period (Arabic)",
+      "features": "Features (English, one per line)",
+      "features_ar": "Features (Arabic, one per line)",
+      "whatsapp": "WhatsApp Number (+country code)",
+      "whatsapp_msg": "Pre-filled WhatsApp Message (English)",
+      "whatsapp_msg_ar": "Pre-filled WhatsApp Message (Arabic)",
+      "highlighted": "Mark as Recommended",
+      "is_active": "Active",
+      "order": "Display Order",
+      "save": "Save Plan",
+      "cancel": "Cancel",
+      "delete_confirm": "Are you sure you want to delete this plan?",
+      "success_add": "Plan added successfully!",
+      "success_edit": "Plan updated successfully!",
+      "success_delete": "Plan deleted successfully!"
+    },
+    "subscribers": {
+      "title": "Subscribers Management",
+      "add_new": "Add Subscriber",
+      "phone": "WhatsApp Phone Number",
+      "plan": "Plan",
+      "token": "Access Token",
+      "status": "Status",
+      "expires_at": "Expires At",
+      "lifetime": "Lifetime",
+      "note": "Internal Note",
+      "actions": "Actions",
+      "copy_token": "Copy Token",
+      "revoke": "Revoke",
+      "delete": "Delete",
+      "generate_token": "Generate Token",
+      "token_copied": "Token copied to clipboard!",
+      "revoke_confirm": "Are you sure you want to revoke this token?",
+      "delete_confirm": "Are you sure you want to delete this subscriber?",
+      "status_active": "Active",
+      "status_expired": "Expired",
+      "status_revoked": "Revoked",
+      "set_expiry": "Set Expiry Date (optional)",
+      "no_expiry": "No expiry (lifetime)",
+      "success_add": "Subscriber added successfully!",
+      "success_revoke": "Token revoked successfully!",
+      "success_delete": "Subscriber deleted successfully!"
+    }
+  }
+}
+```
+
+---
+
+### 10.5 Firestore Security Rules — Updates Needed
+
+Add these rules alongside existing ones:
+
+```javascript
+// Plans — public read, admin write
+match /plans/{planId} {
+  allow read: if true;
+  allow write: if request.auth != null;
+}
+
+// Subscribers — admin only (never expose tokens to public)
+match /subscribers/{subId} {
+  allow read: if request.auth != null;  // Admin only
+  allow write: if request.auth != null;
+  // Special: allow read for token validation only
+  // (See subscriberService.js — query by token field, return only isActive)
+}
+```
+
+> ⚠️ **Important Firestore Rule Note:** The `subscribers` collection must NOT be publicly readable by default. The token validation query is the one exception — `subscriberService.js` will query by `token` field but the Firestore rule should be carefully scoped. Consider using a Firebase Cloud Function for token validation in the future for higher security.
+
+---
+
+### 10.6 Updated Folder Structure
+
+```
+src/
+├── components/
+│   ├── home/
+│   │   └── Pricing.jsx                  # NEW — Public pricing cards section
+│   ├── public/
+│   │   └── AccessGate.jsx               # NEW — Blur overlay + token input
+│   └── admin/
+│       ├── PlanModal.jsx                # NEW — Add/Edit plan modal
+│       └── SubscriberModal.jsx          # NEW — Add subscriber + show token
+├── pages/
+│   └── admin/
+│       ├── Plans.jsx                    # NEW — Admin plans CRUD page
+│       └── Subscribers.jsx              # NEW — Admin subscribers management
+├── services/
+│   ├── planService.js                   # NEW — Firestore CRUD for plans
+│   └── subscriberService.js             # NEW — Firestore CRUD + token validation
+└── hooks/
+    ├── usePlans.js                      # NEW — Fetch & subscribe to plans
+    └── useSubscriber.js                 # NEW — Token validation + localStorage
+```
+
+---
+
+### 10.7 Homepage Section Order (Updated)
+
+```
+Homepage
+  ├── Hero
+  ├── About
+  ├── Services
+  ├── Statistics
+  ├── Pricing          ← NEW (Phase 10)
+  ├── Results          ← Updated with blur gate (Phase 10)
+  └── Contact & Footer
+```
+
+---
+
+### Tasks Checklist
+
+#### Firestore & Services
+- [ ] Create `plans` collection in Firestore (seed 2-3 default plans)
+- [ ] Create `subscribers` collection in Firestore
+- [ ] Update Firestore security rules for `plans` and `subscribers`
+- [ ] Create `src/services/planService.js` (CRUD)
+- [ ] Create `src/services/subscriberService.js` (CRUD + `validateToken(token)`)
+- [ ] Create `src/hooks/usePlans.js`
+- [ ] Create `src/hooks/useSubscriber.js` (reads localStorage, validates against Firestore)
+
+#### Public — Pricing Section
+- [ ] Build `src/components/home/Pricing.jsx` — dynamic plan cards from Firestore
+- [ ] Add WhatsApp deep link button to each plan card
+- [ ] Support bilingual plan names, prices, features (EN/AR)
+- [ ] Add "Recommended" badge logic
+- [ ] Add to `Home.jsx` page between Services and Results sections
+- [ ] Add translation keys to `en.json` and `ar.json`
+
+#### Public — Access Gate / Blur System
+- [ ] Update `src/components/public/PublicResults.jsx`:
+  - Show only first result per market for non-subscribers
+  - Blur remaining results with `filter: blur(12px)`
+  - Render `AccessGate` overlay on blurred results
+- [ ] Build `src/components/public/AccessGate.jsx`:
+  - Lock icon + localized message
+  - "Enter Access Token" button (opens inline modal)
+  - "View Plans" button (scrolls to Pricing)
+  - Token input modal with validation UX
+- [ ] Animate result reveal when token is validated
+- [ ] Persist access token in `localStorage`
+- [ ] Check access on every page load
+
+#### Admin — Plans Management
+- [ ] Build `src/pages/admin/Plans.jsx` — table with Add/Edit/Delete
+- [ ] Build `src/components/admin/PlanModal.jsx` — bilingual form
+- [ ] Add "Plans" link to AdminLayout sidebar
+- [ ] Add translation keys to en.json / ar.json
+
+#### Admin — Subscribers Management
+- [ ] Build `src/pages/admin/Subscribers.jsx` — table with all subscriber data
+- [ ] Build `src/components/admin/SubscriberModal.jsx`:
+  - Phone number input
+  - Plan dropdown
+  - Optional expiry date picker
+  - Internal note field
+  - Auto-generate token on submit (prefix `ax_` + 12 random chars)
+  - Show generated token with one-click copy
+- [ ] Copy token to clipboard action
+- [ ] Revoke token action (sets `isActive: false`)
+- [ ] Filter by status (Active / Expired / Revoked)
+- [ ] Add "Subscribers" link to AdminLayout sidebar
+- [ ] Add translation keys to en.json / ar.json
+
+#### Polish
+- [ ] Responsive audit for Pricing section (mobile/tablet/desktop)
+- [ ] RTL audit for Pricing + AccessGate in Arabic
+- [ ] Test full flow: Admin adds subscriber → copies token → user enters token → results unlock
+- [ ] Test expiry: expired token should be rejected
+- [ ] Test revocation: revoked token should be rejected
+- [ ] Build verification: `npm run build` passes
+
+---
+
+### ⚠️ NOTE — WhatsApp Numbers
+
+> When implementing, you will need to supply the **real WhatsApp phone numbers** for each plan (in international format, e.g. `+201234567890`).
+> These are stored in Firestore and editable via the admin dashboard — you can enter/change them at any time without code changes.
+
+### ⚠️ NOTE — Firestore Rule for Token Validation
+
+> The current Firestore security design marks `subscribers` as **admin-read-only**.
+> For the public token validation query to work without exposing all subscriber data, the `subscriberService.js` will need to query by the `token` field only and return minimal data (`isActive`, `expiresAt`).
+> A more secure approach (future upgrade) is to handle token validation in a **Firebase Cloud Function** — but for this phase, client-side validation with restricted Firestore reads is acceptable.
+
+### Deliverable
+
+✅ Public Pricing section with WhatsApp-linked plans + subscriber-gated trading results with admin-managed access tokens.
 
 ---
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 import Button from '../common/Button';
 
 const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
@@ -10,6 +11,7 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
     slug: '',
     icon: '',
     order: 1,
+    freeResultsCount: 1,
     isActive: true
   });
 
@@ -24,10 +26,11 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
         slug: market.slug || '',
         icon: market.icon || '📈',
         order: market.order || 1,
+        freeResultsCount: market.freeResultsCount !== undefined ? market.freeResultsCount : 1,
         isActive: market.isActive !== undefined ? market.isActive : true
       });
     } else {
-      setFormData({ name: '', nameAr: '', slug: '', icon: '📈', order: 1, isActive: true });
+      setFormData({ name: '', nameAr: '', slug: '', icon: '📈', order: 1, freeResultsCount: 1, isActive: true });
     }
   }, [market, isOpen]);
 
@@ -54,10 +57,11 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
     setLoading(true);
     try {
       await onSave(formData);
+      toast.success(t('admin.markets.saved', 'Market saved successfully!'));
       onClose();
     } catch (error) {
       console.error(error);
-      alert(t('errors.generic'));
+      toast.error(t('errors.generic', 'Something went wrong. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -119,7 +123,7 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">{t('admin.markets.icon')}</label>
               <input
@@ -132,21 +136,33 @@ const MarketModal = ({ isOpen, onClose, onSave, market = null }) => {
                 placeholder="e.g. 🇺🇸"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">Display Order</label>
-              <input
-                type="number"
-                name="order"
-                value={formData.order}
-                onChange={handleChange}
-                required
-                min="1"
-                className="w-full px-4 py-2 bg-bg-primary border border-border rounded-lg text-text-primary focus:outline-none focus:border-accent-gold"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">{t('admin.markets.order', 'Display Order')}</label>
+                <input
+                  type="number"
+                  name="order"
+                  value={formData.order}
+                  onChange={handleChange}
+                  min="1"
+                  className="w-full px-4 py-2 bg-bg-primary border border-border rounded-lg text-text-primary focus:outline-none focus:border-accent-gold"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1" title="Number of unblurred results before asking for subscription">{t('admin.markets.free_results', 'Free Results')}</label>
+                <input
+                  type="number"
+                  name="freeResultsCount"
+                  value={formData.freeResultsCount}
+                  onChange={(e) => setFormData(prev => ({ ...prev, freeResultsCount: Number(e.target.value) }))}
+                  min="0"
+                  className="w-full px-4 py-2 bg-bg-primary border border-border rounded-lg text-text-primary focus:outline-none focus:border-accent-gold"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-3 py-2">
             <input
               type="checkbox"
               name="isActive"

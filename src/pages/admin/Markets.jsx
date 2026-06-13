@@ -32,14 +32,15 @@ const Markets = () => {
     await refetch();
   };
 
-  const handleDelete = async (slug, name) => {
-    if (window.confirm(t('admin.markets.delete_confirm'))) {
+  const handleDelete = async (id) => {
+    if (window.confirm(t('admin.markets.confirm_delete'))) {
       try {
-        await deleteMarket(slug);
+        await deleteMarket(id);
+        toast.success(t('admin.markets.deleted', 'Market deleted successfully.'));
         await refetch();
       } catch (err) {
         console.error(err);
-        alert(t('errors.generic'));
+        toast.error(t('errors.generic', 'Something went wrong. Please try again.'));
       }
     }
   };

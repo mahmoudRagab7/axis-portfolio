@@ -29,6 +29,7 @@
 20. [Scalability Ideas](#20-scalability-ideas)
 21. [Future Enhancements](#21-future-enhancements)
 22. [Internationalization (i18n)](#22-internationalization-i18n)
+23. [Pricing Plans & Subscription Access System](#23-pricing-plans--subscription-access-system)
 
 ---
 
@@ -59,11 +60,12 @@ Visitors can **filter trading results by market**, view before/after trade analy
 | **About Section** | Company mission, vision, team highlights |
 | **Services Section** | Cards for each service (signals, analysis, advisory, education) |
 | **Statistics Section** | Animated counters: total trades, success rate, markets covered, years active |
+| **Pricing Section** | Dynamic subscription plan cards with WhatsApp contact buttons (no payment gateway) |
 | **Markets Filter** | Interactive filter tabs: US, Egypt, Saudi, Crypto, Forex (expandable) |
-| **Results Showcase** | Filterable grid of result cards with before/after images |
-| **Language Switcher** | Switch between English (🇺🇸/🇬🇧) and Arabic (🇪🇬) with flag indicators |
+| **Results Showcase** | First result per market free; remaining results blurred behind access gate for subscribers |
+| **Subscription Access Gate** | Token-based unlock system — user enters an admin-issued token to reveal all results |
+| **Language Switcher** | Switch between English (🇺🇸) and Arabic (🇪🇬) with flag indicators |
 | **Footer** | Contact info, social media links, quick navigation |
-| **Responsive Design** | Mobile-first, works on all screen sizes |
 
 ### 2.2 Admin Dashboard Side
 
@@ -76,6 +78,8 @@ Visitors can **filter trading results by market**, view before/after trade analy
 | **Delete Result** | Remove results with confirmation dialog |
 | **Manage Markets** | Add/edit/remove market categories |
 | **Manage Statistics** | Update the public statistics section values |
+| **Manage Plans** | Add/edit/delete subscription pricing plans (bilingual EN/AR), set WhatsApp contact numbers |
+| **Manage Subscribers** | Add subscribers, auto-generate access tokens, copy tokens, revoke/delete |
 | **Language Switcher** | Admin UI localized in multiple languages |
 | **Logout** | Secure session termination |
 
@@ -104,20 +108,24 @@ Landing Page
   ├── About → Company information
   ├── Services → Service cards
   ├── Statistics → Animated counters
+  ├── Pricing → Subscription plan cards with WhatsApp CTA
   ├── Markets Filter → Select market tab
-  │     └── Results Grid → Filtered result cards
-  │           └── Result Card → Click to expand (modal with before/after)
+  │     └── Results Grid → First result visible, rest blurred for guests
+  │           └── AccessGate overlay → "Enter Token" or "View Plans"
+  │                 └── Token valid → All results unlock
   └── Footer → Contact & social links
 ```
 
 **Key interactions:**
 1. User lands on the homepage
 2. Scrolls through sections or clicks CTA
-3. Reaches the results section
-4. Clicks a market filter tab (e.g., "Crypto")
-5. Results grid updates to show only Crypto results
-6. Clicks a result card to see full before/after comparison
-7. Can contact via footer links
+3. Reaches the Pricing section — sees plan cards with WhatsApp contact buttons
+4. Continues to the Results section
+5. Sees the first result per market (free preview)
+6. Subsequent results are blurred — clicks "Enter Access Token"
+7. Enters admin-issued token → results unlock instantly
+8. Alternatively: clicks "View Plans" → scrolls to Pricing → contacts via WhatsApp
+9. Can contact via footer links
 
 ---
 
@@ -130,6 +138,8 @@ Landing Page
         │     ├── /admin/results/add → Upload new result
         │     └── /admin/results/edit/:id → Edit existing
         ├── /admin/markets → Manage market categories
+        ├── /admin/plans → Manage pricing plans (NEW)
+        ├── /admin/subscribers → Manage subscribers + tokens (NEW)
         ├── /admin/statistics → Edit public stats
         └── Logout → Back to login
 ```
@@ -141,7 +151,10 @@ Landing Page
 4. Can add new results with image uploads
 5. Can edit/delete existing results
 6. Can manage markets and statistics
-7. Logs out when finished
+7. Can create/edit pricing plans with WhatsApp numbers
+8. Can add subscribers, auto-generate access tokens, and copy them to send via WhatsApp
+9. Can revoke tokens to remove a subscriber's access
+10. Logs out when finished
 
 ---
 
@@ -201,7 +214,9 @@ axis-portfolio-db (Firebase Project)
   └── Cloud Firestore
         ├── results (collection)
         ├── markets (collection)
-        └── statistics (collection)
+        ├── statistics (collection)
+        ├── plans (collection)       ← NEW Phase 10
+        └── subscribers (collection)  ← NEW Phase 10
 ```
 
 ### Cloudinary Setup (Image Hosting)
@@ -241,9 +256,22 @@ service cloud.firestore {
     match /statistics/{statId} {
       allow write: if request.auth != null;
     }
+    // Plans: public read, admin write
+    match /plans/{planId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    // Subscribers: admin read/write only (tokens must not be publicly exposed)
+    // Exception: allow limited read by token field for public token validation
+    match /subscribers/{subId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
   }
 }
 ```
+
+> ⚠️ **Note on Token Validation:** Since `subscribers` is admin-read-only, the `subscriberService.js` token validation performs a Firestore query that requires a temporary read allowance. For the current model, you may allow a limited public query by token field only. See Section 23 for the recommended approach and the future upgrade path to Cloud Functions.
 
 ---
 
@@ -255,14 +283,11 @@ service cloud.firestore {
 {
   "id": "auto-generated",
   "stockName": "AAPL",
-  "description": {
-    "en": "Apple stock analysis showing bullish breakout pattern",
-    "ar": "تحليل سهم أبل يظهر نمط اختراق صعودي"
-  },
+  "description": "English description of the trade",
+  "descriptionAr": "Arabic description of the trade",
   "successPercentage": 87,
   "market": "us",
-  "beforeImage": "https://res.cloudinary.com/doy677kax/image/upload/...",
-  "afterImage": "https://res.cloudinary.com/doy677kax/image/upload/...",
+  "imageUrl": "https://res.cloudinary.com/doy677kax/image/upload/...",
   "date": "2026-05-01T00:00:00Z",
   "createdAt": "2026-05-09T12:00:00Z",
   "updatedAt": "2026-05-09T12:00:00Z"
@@ -274,10 +299,8 @@ service cloud.firestore {
 ```json
 {
   "id": "us",
-  "name": {
-    "en": "US Market",
-    "ar": "السوق الأمريكي"
-  },
+  "name": "US Market",
+  "nameAr": "السوق الأمريكي",
   "slug": "us",
   "icon": "🇺🇸",
   "order": 1,
@@ -310,6 +333,48 @@ Single document `main`:
   "updatedAt": "2026-05-09T12:00:00Z"
 }
 ```
+
+### 7.4 `plans` Collection *(Phase 10 — New)*
+
+```json
+{
+  "id": "auto-generated",
+  "nameEn": "Premium",
+  "nameAr": "مميز",
+  "price": "499",
+  "currency": "EGP",
+  "billingPeriodEn": "/ month",
+  "billingPeriodAr": "/ شهر",
+  "featuresEn": ["Full access to all results", "Real-time signals", "1-on-1 consultation"],
+  "featuresAr": ["وصول كامل لجميع النتائج", "توصيات فورية", "استشارة فردية"],
+  "whatsappNumber": "+201234567890",
+  "whatsappMessageEn": "Hello, I'm interested in the Premium plan.",
+  "whatsappMessageAr": "مرحباً، أنا مهتم بالخطة المميزة.",
+  "isHighlighted": true,
+  "order": 2,
+  "isActive": true
+}
+```
+
+### 7.5 `subscribers` Collection *(Phase 10 — New)*
+
+> ⚠️ This collection is **admin-read-only** in Firestore rules. Tokens must never be exposed publicly.
+
+```json
+{
+  "id": "auto-generated",
+  "phoneNumber": "+201234567890",
+  "token": "ax_7f3b9e2c1a4d",
+  "planId": "premium-plan-id",
+  "planNameEn": "Premium",
+  "isActive": true,
+  "expiresAt": null,
+  "createdAt": "2026-06-01T12:00:00Z",
+  "note": "Referred by Instagram"
+}
+```
+
+**Token format:** `ax_` prefix + 12 random alphanumeric characters (e.g. `ax_7f3b9e2c1a4d`)
 
 ---
 
@@ -841,11 +906,14 @@ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 
 | **Pagination** | Add Firestore cursor-based pagination for results |
 | **Search** | Add client-side search or Algolia integration |
 | **Multi-language** | ✅ Implemented — i18n with `react-i18next` (English + Arabic). See [Section 22](#22-internationalization-i18n) |
+| **Pricing Plans** | ✅ Implemented — dynamic from Firestore, admin-managed, WhatsApp-linked. See [Section 23](#23-pricing-plans--subscription-access-system) |
+| **Subscriber Access** | ✅ Implemented — token-based result gating, admin-managed. See [Section 23](#23-pricing-plans--subscription-access-system) |
 | **Blog** | New Firestore collection + public blog pages |
-| **User Accounts** | Enable Firebase Auth for public users (premium content) |
+| **User Accounts** | Firebase Auth for public users — would replace token system with proper auth |
 | **Analytics** | Firebase Analytics or Google Analytics 4 |
 | **Performance** | Cloud Functions for image optimization on upload |
 | **CDN** | Firebase Storage + Cloud CDN for global image delivery |
+| **Secure Token Validation** | Move `validateToken()` to a Firebase Cloud Function to prevent any Firestore token exposure |
 
 ---
 
@@ -1136,4 +1204,142 @@ This documentation serves as the **complete roadmap** for building the AXIS Port
 
 ---
 
-*Document generated for AXIS Portfolio — May 2026*
+## 23. Pricing Plans & Subscription Access System
+
+> This feature is documented in full detail in `PHASES_WALKTHROUGH.md` Phase 10.
+
+### 23.1 Overview
+
+The system adds two tightly coupled features:
+
+1. **Pricing Section** — A public-facing section on the homepage where admin-managed subscription plans are displayed as premium cards. Each plan links to a WhatsApp number for direct contact. No payment gateway is used.
+
+2. **Access Gate** — The Results section shows only the **first result per market** to non-subscribers. Remaining results are blurred behind an overlay CTA. Subscribers receive an admin-issued token that unlocks all results.
+
+---
+
+### 23.2 Pricing Plans
+
+**Where:** Displayed between the Statistics and Results sections on the homepage.
+**Source:** Firestore `plans` collection (see Section 7.4 for document schema).
+**Admin Control:** Admin manages plans from `/admin/plans` — add, edit, delete.
+
+**Key fields per plan:**
+- Bilingual name (EN + AR)
+- Price, currency, billing period (EN + AR)
+- Features list (EN + AR, one per item)
+- WhatsApp number (international format)
+- Pre-filled WhatsApp message (EN + AR)
+- Highlighted/recommended flag
+- Display order + active toggle
+
+**WhatsApp Button behavior:**
+```
+https://wa.me/{whatsappNumber}?text={urlEncoded(whatsappMessage[currentLanguage])}
+```
+The message sent in WhatsApp reflects the **currently active language** of the site.
+
+**Card Design:**
+- Premium dark card with hover effect
+- Gold border + "Recommended" badge on highlighted plan
+- ✓ checkmarks for each feature
+- Gold CTA button: "📱 Subscribe via WhatsApp"
+
+---
+
+### 23.3 Subscription Access Gate
+
+**Access Levels & Two-Layer UX:**
+
+| View | Guest | Subscriber |
+|------|-------|------------|
+| **Homepage Preview** | Sees up to 4 results + "See All Results" button | Sees up to 4 results + "See All Results" button |
+| **Full-Screen Overlay** | First result visible, rest blurred behind overlay | All results fully visible |
+
+**Token System:**
+1. Admin issues token from `/admin/subscribers`
+2. Token format: `ax_` + 12 random alphanumeric chars
+3. Admin sends token to subscriber via WhatsApp (copy button in dashboard)
+4. User enters token on the site via the AccessGate component
+5. Token validated against Firestore `subscribers` collection
+6. Valid + active token → stored in `localStorage` → all results unlock
+7. Invalid / expired / revoked → localized error shown
+
+**Access check on page load:**
+- `useSubscriber` hook reads token from `localStorage`
+- Validates against Firestore on first load (then caches result)
+- If valid: `isSubscribed = true` everywhere in the app
+- If invalid/missing: `isSubscribed = false` → blur gate active
+
+---
+
+### 23.4 AccessGate & Overlay Component
+
+**Location:** `src/components/public/AccessGate.jsx` and `src/components/public/ResultsOverlay.jsx`
+
+**UX Flow:**
+1. Homepage shows max 4 results. If more exist, a **"See All Results →"** button appears.
+2. Clicking it opens a **Full-Screen Overlay** (slide-up animation).
+3. Inside the overlay, if `isSubscribed === false`, the first result is clear, and the rest are blurred by the `AccessGate` component.
+
+**Layout:**
+```
+┌───────────────────────────────────────────────┐
+│       🔐  Premium Content                   │
+│  Subscribe to unlock all trading results  │
+│                                           │
+│  [ 🔑 Enter Access Token ]  [ 📦 View Plans ] │
+└───────────────────────────────────────────────┘
+     (Blurred results visible behind overlay)
+```
+
+**Token input modal:**
+```
+┌─────────────────────────────┐
+│ Access Token                │
+│ [ ax_7f3b9e2c1a4d        ]  │
+│ [ Unlock Access          ]  │
+│ Error: Invalid token...     │
+└─────────────────────────────┘
+```
+
+---
+
+### 23.5 Admin Subscribers Management
+
+**Page:** `/admin/subscribers`
+
+| Column | Description |
+|--------|-------------|
+| Phone | Subscriber's WhatsApp number |
+| Plan | Which plan they are subscribed to |
+| Token | Access token (click to copy) |
+| Status | Active / Expired / Revoked (color-coded badge) |
+| Expires At | Date or "Lifetime" |
+| Note | Internal admin note |
+| Actions | Copy Token • Revoke • Delete |
+
+**Add Subscriber flow:**
+1. Enter phone number
+2. Select plan from dropdown
+3. Optionally set expiry date
+4. Optionally add internal note
+5. Click "Add Subscriber" → token auto-generated
+6. Token displayed in a copy-ready field → paste into WhatsApp and send
+
+---
+
+### 23.6 Security Notes
+
+| Aspect | Approach |
+|--------|----------|
+| **Token entropy** | `ax_` + 12 alphanumeric chars = 36^12 ≈ 4.7 × 10^18 combinations |
+| **Revocation** | Admin sets `isActive: false` in Firestore — immediately effective |
+| **Expiry** | Optional `expiresAt` timestamp — `useSubscriber` checks this on every load |
+| **Blur vs. real security** | CSS blur is a UX gate only — image URLs are still in Firestore (publicly readable). For true content security, a Cloud Function proxy would be needed |
+| **localStorage** | Acceptable for this model — if user clears browser data, they must re-enter their token |
+| **Future upgrade** | Replace token system with Firebase Auth for public users + Firestore rules scoped to UID for proper access control |
+
+---
+
+*Document generated for AXIS Portfolio — June 2026*

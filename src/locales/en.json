@@ -3,6 +3,7 @@
     "home": "Home",
     "about": "About",
     "services": "Services",
+    "pricing": "Pricing",
     "results": "Results",
     "admin": "Admin",
     "getSignals": "Get Signals"
@@ -115,7 +116,34 @@
     "no_results_title": "No results found",
     "no_results_desc": "Check back later for new trading predictions.",
     "click_full_size": "Click to view full size",
-    "before_after_alt": "Trading Prediction Before and After"
+    "before_after_alt": "Trading Prediction Before and After",
+    "see_all": "See All Results →",
+    "back_home": "Back to Home",
+    "premium_badge": "Premium",
+    "click_to_unlock": "Click to unlock with your access token",
+    "premium_locked_count": "premium results locked",
+    "unlock_subtitle": "Enter your access token to unlock all premium content",
+    "more_premium_hint": "More premium results available for subscribers"
+  },
+  "pricing": {
+    "section_title": "Choose Your Plan",
+    "subtitle": "Select the subscription plan that fits your trading goals",
+    "recommended": "Recommended",
+    "subscribe_whatsapp": "Subscribe via WhatsApp",
+    "no_plans_title": "No Plans Available",
+    "no_plans_desc": "Premium plans will be added soon. Please check back later!"
+  },
+  "access_gate": {
+    "locked_title": "Premium Content",
+    "locked_desc": "Subscribe to unlock all trading results across every market.",
+    "enter_token": "Enter Access Token",
+    "view_plans": "View Plans",
+    "token_placeholder": "e.g. ax_7f3b9e2c1a4d",
+    "token_submit": "Unlock Access",
+    "token_loading": "Validating...",
+    "token_success": "Access granted! Welcome.",
+    "token_error": "Invalid or expired token. Please try again.",
+    "token_label": "Access Token"
   },
   "admin": {
     "login": {
@@ -133,6 +161,8 @@
       "markets": "Markets",
       "results": "Results",
       "statistics": "Statistics",
+      "plans": "Plans",
+      "subscribers": "Subscribers",
       "logout": "Logout"
     },
     "dashboard": {
@@ -176,7 +206,18 @@
       "select_market": "Select a market...",
       "click_to_change": "Click to change image",
       "click_to_upload": "Click to upload image",
-      "upload_hint": "Supports JPG, PNG, WebP (Max 10MB)"
+      "upload_hint": "Supports JPG, PNG, WebP (Max 10MB)",
+      "click_to_premium": "Click to make Premium",
+      "click_to_free": "Click to make Free",
+      "free_result": "Free Result",
+      "premium_result": "Premium Result",
+      "free_desc": "Visible to all visitors without a subscription",
+      "premium_desc": "Blurred for non-subscribers — requires access token",
+      "marked_free": "Marked as Free",
+      "marked_premium": "Marked as Premium",
+      "type": "Type",
+      "saved": "Result saved successfully!",
+      "deleted": "Result deleted successfully."
     },
     "markets": {
       "title": "Markets Management",
@@ -206,6 +247,59 @@
       "success_update": "Statistics updated successfully!",
       "saving": "Saving..."
     },
+    "plans": {
+      "title": "Plans Management",
+      "add_new": "Add New Plan",
+      "edit_plan": "Edit Plan",
+      "name": "Plan Name (English)",
+      "name_ar": "Plan Name (Arabic)",
+      "price": "Price",
+      "currency": "Currency",
+      "billing_period": "Billing Period (e.g. / month)",
+      "billing_period_ar": "Billing Period (Arabic)",
+      "features": "Features (English, one per line)",
+      "features_ar": "Features (Arabic, one per line)",
+      "whatsapp": "WhatsApp Number (+country code)",
+      "whatsapp_msg": "Pre-filled WhatsApp Message (English)",
+      "whatsapp_msg_ar": "Pre-filled WhatsApp Message (Arabic)",
+      "highlighted": "Mark as Recommended",
+      "is_active": "Active",
+      "order": "Display Order",
+      "actions": "Actions",
+      "save": "Save Plan",
+      "cancel": "Cancel",
+      "delete_confirm": "Are you sure you want to delete this plan?",
+      "success_add": "Plan added successfully!",
+      "success_edit": "Plan updated successfully!",
+      "success_delete": "Plan deleted successfully!"
+    },
+    "subscribers": {
+      "title": "Subscribers Management",
+      "add_new": "Add Subscriber",
+      "phone": "WhatsApp Phone Number",
+      "plan": "Plan",
+      "token": "Access Token",
+      "status": "Status",
+      "expires_at": "Expires At",
+      "lifetime": "Lifetime",
+      "note": "Internal Note",
+      "actions": "Actions",
+      "copy_token": "Copy Token",
+      "revoke": "Revoke",
+      "delete": "Delete",
+      "generate_token": "Generate Token",
+      "token_copied": "Token copied to clipboard!",
+      "revoke_confirm": "Are you sure you want to revoke this token?",
+      "delete_confirm": "Are you sure you want to delete this subscriber?",
+      "status_active": "Active",
+      "status_expired": "Expired",
+      "status_revoked": "Revoked",
+      "set_expiry": "Set Expiry Date (optional)",
+      "no_expiry": "No expiry (lifetime)",
+      "success_add": "Subscriber added successfully!",
+      "success_revoke": "Token revoked successfully!",
+      "success_delete": "Subscriber deleted successfully!"
+    },
     "layout": {
       "language": "Language",
       "theme": "Theme"
@@ -220,7 +314,11 @@
     "auth_too_many_requests": "Too many failed login attempts. Please try again later.",
     "network_error": "Network error. Please check your connection.",
     "upload_failed": "Image upload failed. Please try again.",
-    "generic": "Something went wrong. Please try again."
+    "generic": "Something went wrong. Please try again.",
+    "validation_market": "Please select a market.",
+    "validation_description_en": "Please enter the English description.",
+    "validation_description_ar": "Please enter the Arabic description.",
+    "validation_image": "Please upload a Before/After image."
   },
   "common": {
     "loading": "Loading...",

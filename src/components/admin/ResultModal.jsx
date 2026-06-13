@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 import Button from '../common/Button';
 import { uploadImage } from '../../services/cloudinaryService';
 import { useLanguage } from '../../hooks/useLanguage';
@@ -11,7 +12,8 @@ const ResultModal = ({ isOpen, onClose, onSave, result = null, markets = [] }) =
     market: '',
     description: '',
     descriptionAr: '',
-    imageUrl: ''
+    imageUrl: '',
+    isFree: false
   });
   
   const [file, setFile] = useState(null);
@@ -26,7 +28,8 @@ const ResultModal = ({ isOpen, onClose, onSave, result = null, markets = [] }) =
         market: result.market || '',
         description: result.description || '',
         descriptionAr: result.descriptionAr || '',
-        imageUrl: result.imageUrl || ''
+        imageUrl: result.imageUrl || '',
+        isFree: result.isFree === true
       });
       setPreviewUrl(result.imageUrl || '');
       setFile(null);
@@ -35,7 +38,8 @@ const ResultModal = ({ isOpen, onClose, onSave, result = null, markets = [] }) =
         market: markets.length > 0 ? markets[0].slug : '',
         description: '',
         descriptionAr: '',
-        imageUrl: ''
+        imageUrl: '',
+        isFree: false
       });
       setPreviewUrl('');
       setFile(null);
@@ -66,21 +70,21 @@ const ResultModal = ({ isOpen, onClose, onSave, result = null, markets = [] }) =
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
+    // Validation — each failure shows a specific, clear message
     if (!formData.market) {
-      alert(t('errors.generic'));
+      toast.error(t('errors.validation_market'));
       return;
     }
-    if (!formData.description) {
-      alert(t('errors.generic'));
+    if (!formData.description.trim()) {
+      toast.error(t('errors.validation_description_en'));
       return;
     }
-    if (!formData.descriptionAr) {
-      alert(t('errors.generic'));
+    if (!formData.descriptionAr.trim()) {
+      toast.error(t('errors.validation_description_ar'));
       return;
     }
     if (!file && !formData.imageUrl) {
-      alert(t('errors.generic'));
+      toast.error(t('errors.validation_image'));
       return;
     }
 
@@ -100,10 +104,11 @@ const ResultModal = ({ isOpen, onClose, onSave, result = null, markets = [] }) =
       };
       
       await onSave(finalData);
+      toast.success(t('admin.results.saved', 'Result saved successfully!'));
       onClose();
     } catch (error) {
-      console.error(error);
-      alert(error.message || t('errors.generic'));
+      console.error('ResultModal error:', error);
+      toast.error(error.message || t('errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -200,6 +205,30 @@ const ResultModal = ({ isOpen, onClose, onSave, result = null, markets = [] }) =
                 placeholder="صف تفاصيل الصفقة، نقاط الدخول والخروج، والنتيجة النهائية باللغة العربية..."
                 dir="rtl"
               ></textarea>
+            </div>
+          </div>
+
+          {/* Free / Premium Toggle */}
+          <div className={`flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+            formData.isFree
+              ? 'border-green-500/40 bg-green-500/5'
+              : 'border-accent-gold/30 bg-accent-gold/5'
+          }`}
+            onClick={() => setFormData(prev => ({ ...prev, isFree: !prev.isFree }))}
+          >
+            <div className={`mt-0.5 w-12 h-6 rounded-full transition-all duration-300 relative flex-shrink-0 ${formData.isFree ? 'bg-green-500' : 'bg-accent-gold/40'}`}>
+              <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 ${formData.isFree ? 'left-6' : 'left-0.5'}`} />
+            </div>
+            <div>
+              <p className={`font-bold text-sm ${formData.isFree ? 'text-green-400' : 'text-accent-gold'}`}>
+                {formData.isFree ? `🔓 ${t('admin.results.free_result', 'Free Result')}` : `🔒 ${t('admin.results.premium_result', 'Premium Result')}`}
+              </p>
+              <p className="text-text-muted text-xs mt-0.5">
+                {formData.isFree
+                  ? t('admin.results.free_desc', 'Visible to all visitors without a subscription')
+                  : t('admin.results.premium_desc', 'Blurred for non-subscribers — requires access token')
+                }
+              </p>
             </div>
           </div>
 

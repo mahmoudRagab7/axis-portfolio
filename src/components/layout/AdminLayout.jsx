@@ -25,6 +25,8 @@ const AdminLayout = () => {
     { name: t('admin.sidebar.dashboard'), path: '/admin', icon: '📊' },
     { name: t('admin.sidebar.results'), path: '/admin/results', icon: '📈' },
     { name: t('admin.sidebar.markets'), path: '/admin/markets', icon: '🌍' },
+    { name: t('admin.sidebar.plans'), path: '/admin/plans', icon: '📦' },
+    { name: t('admin.sidebar.subscribers'), path: '/admin/subscribers', icon: '👥' },
   ];
 
   return (
